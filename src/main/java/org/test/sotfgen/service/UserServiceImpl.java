@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.test.sotfgen.Exceptions.user.UserNotFoundException;
 import org.test.sotfgen.dto.UserEntityDto;
@@ -30,6 +31,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserEntity createUser(UserEntityDto user) {
         UserEntity userToCreate = new UserEntity(user);
+        userToCreate.setPassword(new BCryptPasswordEncoder().encode(userToCreate.getPassword()));
         return userRepository.save(userToCreate);
     }
 
@@ -44,6 +46,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(Integer id) {
         UserEntity userToDelete = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(("user with id " + id + " not found")));
         userToDelete.setActive(false);

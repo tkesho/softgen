@@ -5,14 +5,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.test.sotfgen.dto.UserEntityDto;
+import org.test.sotfgen.model.base.Auditable;
+
+import java.util.Set;
 
 @Entity
 @Setter
 @Getter
 @NoArgsConstructor
-@Table(name = "users")
-@SequenceGenerator(name = "user_id_gen", sequenceName = "users_id_seq", allocationSize = 1)
-public class UserEntity {
+@Table(name = "users", schema = "auth")
+@SequenceGenerator(name = "user_id_gen", sequenceName = "users_id_seq", allocationSize = 1, schema = "auth")
+public class UserEntity extends Auditable {
 
     @Id
     @GeneratedValue(generator = "user_id_gen", strategy = GenerationType.SEQUENCE)
@@ -31,6 +34,13 @@ public class UserEntity {
     @Column(name = "active", nullable = false)
     private boolean active;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "users_roles", schema = "auth",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<RoleEntity> roles;
 
     public UserEntity(UserEntityDto user) {
         this.username = user.getUsername();

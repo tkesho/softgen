@@ -61,12 +61,24 @@ public class PersonServiceImpl implements PersonService {
     }
 
     private void updatePersonFields(PersonEntityDto person, PersonEntity personToUpdate) {
-        personToUpdate.setFirstName(person.getFirstName());
-        personToUpdate.setLastName(person.getLastName());
-        personToUpdate.setNationalId(person.getNationalId());
-        personToUpdate.setAddress(person.getAddress());
-        personToUpdate.setPhoneNumber(person.getPhoneNumber());
-        personToUpdate.setGender(person.getGender());
+        if (person.getFirstName() != null) {
+            personToUpdate.setFirstName(person.getFirstName());
+        }
+        if (person.getLastName() != null) {
+            personToUpdate.setLastName(person.getLastName());
+        }
+        if (person.getNationalId() != null) {
+            personToUpdate.setNationalId(person.getNationalId());
+        }
+        if (person.getAddress() != null) {
+            personToUpdate.setAddress(person.getAddress());
+        }
+        if (person.getPhoneNumber() != null) {
+            personToUpdate.setPhoneNumber(person.getPhoneNumber());
+        }
+        if (person.getGender() != null) {
+            personToUpdate.setGender(person.getGender());
+        }
     }
 
     private Predicate getPredicate(PersonSearchParams params, Root<PersonEntity> root, CriteriaBuilder cb) {

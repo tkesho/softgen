@@ -16,7 +16,7 @@ public class SecUser implements UserDetails {
     public SecUser(UserEntity user) {
         this.username = user.getUsername();
         this.password = user.getPassword();
-        this.enabled = user.isActive();
+        this.enabled = user.getActive();
         this.authorities = user.getRoles().stream()
                 .flatMap(role -> {
                     List<SimpleGrantedAuthority> combined = new ArrayList<>();

@@ -32,7 +32,7 @@ public class UserEntity extends Auditable {
     private String email;
 
     @Column(name = "active", nullable = false)
-    private boolean active;
+    private Boolean active;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -41,6 +41,10 @@ public class UserEntity extends Auditable {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<RoleEntity> roles;
+
+
+    @ManyToMany(mappedBy = "usersGroups")
+    private Set<GroupEntity> groups;
 
     public UserEntity(UserEntityDto user) {
         this.username = user.getUsername();

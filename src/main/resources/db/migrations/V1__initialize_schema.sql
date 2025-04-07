@@ -30,7 +30,7 @@ create table auth.users_roles
     role_id integer not null
         constraint user_roles_roles_fk references auth.roles (id),
 
-    constraint user_id_role_id_uq unique (user_id, role_id)
+    constraint user_id_role_id_uk unique (user_id, role_id)
 );
 
 create table auth.authorities
@@ -47,7 +47,7 @@ create table auth.roles_authorities
     authority_id integer not null
         constraint authority_roles_authorities references auth.authorities (id),
 
-    constraint role_id_authority_id_uq unique (role_id, authority_id)
+    constraint role_id_authority_id_uk unique (role_id, authority_id)
 );
 
 
@@ -69,7 +69,12 @@ values ('USER_READ'),
        ('PERSON_READ'),
        ('PERSON_CREATE'),
        ('PERSON_UPDATE'),
-       ('PERSON_DELETE');
+       ('PERSON_DELETE'),
+       ('GROUP_DELETE'),
+       ('GROUP_UPDATE'),
+       ('GROUP_CREATE'),
+       ('GROUP_READ_PUBLIC'),
+       ('GROUP_READ_PRIVATE');
 
 insert into auth.roles_authorities (role_id, authority_id)
 select 1, a.id

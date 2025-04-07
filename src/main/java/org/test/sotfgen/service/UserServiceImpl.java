@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity getUser(Integer id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("user with id " + id + " not found"));
+        return getUserById(id);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserEntity updateUser(UserEntityDto user, Integer id) {
-        UserEntity userToUpdate = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("user with id " + id + " not found"));
+        UserEntity userToUpdate = getUserById(id);
         userToUpdate.setUsername(user.getUsername());
         userToUpdate.setPassword(user.getPassword());
         userToUpdate.setEmail(user.getEmail());
@@ -48,8 +48,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(Integer id) {
-        UserEntity userToDelete = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(("user with id " + id + " not found")));
+        UserEntity userToDelete = getUserById(id);
         userToDelete.setActive(false);
         userRepository.save(userToDelete);
+    }
+
+    public UserEntity getUserById(Integer id) {
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(("user with id " + id + " not found")));
     }
 }

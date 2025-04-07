@@ -31,14 +31,13 @@ public class UserController {
         return ResponseEntity.ok(userService.getUsers(PageRequest.of(pageNumber, pageSize, sorter)));
     }
 
-    @PreAuthorize("true")
-
+    @PreAuthorize("hasAuthority('USER_READ')")
     @GetMapping("/{id}")
     public ResponseEntity<UserEntity> getUser(@PathVariable Integer id) {
         return ResponseEntity.ok(userService.getUser(id));
     }
 
-    @PreAuthorize("true")
+    @PreAuthorize("hasAuthority('USER_CREATE')")
     @PostMapping
     public ResponseEntity<UserEntity> createUser(@RequestBody UserEntityDto user) {
         UserEntity createdUser = userService.createUser(user);

@@ -13,4 +13,5 @@ public interface UserService {
     UserEntity createUser(UserEntityDto user);
     UserEntity updateUser(UserEntityDto user, Integer id);
     void deleteUser(Integer id);
+    UserEntity getUserById(Integer userId);
 }

@@ -58,13 +58,18 @@ values ('admin@softgen.ge', 'admin', '$2a$10$./iK4EZY/vuUT4mT.ZqwuuxTWsv2/KCxPM8
         'admin');
 
 insert into auth.roles (role)
-values ('ROLE_ADMIN');
+values ('ROLE_ADMIN'),
+       ('ROLE_TEAM_LEADER');
 
 insert into auth.authorities (authority)
 values ('USER_READ'),
        ('USER_CREATE'),
        ('USER_UPDATE'),
-       ('USER_DELETE');
+       ('USER_DELETE'),
+       ('PERSON_READ'),
+       ('PERSON_CREATE'),
+       ('PERSON_UPDATE'),
+       ('PERSON_DELETE');
 
 insert into auth.roles_authorities (role_id, authority_id)
 select 1, a.id

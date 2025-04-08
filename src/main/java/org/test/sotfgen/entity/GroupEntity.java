@@ -1,5 +1,6 @@
 package org.test.sotfgen.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -37,6 +38,7 @@ public class GroupEntity extends Auditable {
     @JoinColumn(name = "owner_id", nullable = false)
     private UserEntity owner;
 
+    @JsonManagedReference
     @ManyToMany
     @JoinTable(
             name = "users_groups",
@@ -44,7 +46,7 @@ public class GroupEntity extends Auditable {
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private Set<UserEntity> usersGroups;
+    private Set<UserEntity> members;
 
     @NotNull
     @ColumnDefault("true")
@@ -58,7 +60,7 @@ public class GroupEntity extends Auditable {
     private Privacy privacy;
 
     public enum Privacy {
-        PUBLIC, PRIVATE;
+        PUBLIC, PRIVATE
     }
 
     @PrePersist

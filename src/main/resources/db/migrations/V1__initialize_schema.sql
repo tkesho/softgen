@@ -81,4 +81,5 @@ select 1, a.id
 from auth.authorities a;
 
 insert into auth.users_roles (user_id, role_id)
-values (1, 1);
+select 1, a.id
+from auth.roles a;

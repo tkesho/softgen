@@ -1,5 +1,7 @@
 package org.test.sotfgen.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +27,7 @@ public class UserEntity extends Auditable {
     @Column(name = "username", nullable = false,  unique = true)
     private String username;
 
+    @JsonIgnore
     @Column(name = "password", nullable = false, unique = true)
     private String password;
 
@@ -43,7 +46,8 @@ public class UserEntity extends Auditable {
     private Set<RoleEntity> roles;
 
 
-    @ManyToMany(mappedBy = "usersGroups")
+    @JsonBackReference
+    @ManyToMany(mappedBy = "members", fetch =  FetchType.EAGER)
     private Set<GroupEntity> groups;
 
     public UserEntity(UserEntityDto user) {

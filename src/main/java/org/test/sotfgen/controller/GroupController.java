@@ -59,4 +59,18 @@ public class GroupController {
         groupService.deletePerson(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PreAuthorize("hasRole('TEAM_LEADER')")
+    @PostMapping("/{userId}/insert/{groupId}")
+    public ResponseEntity<?> insertUserToGroup(@PathVariable Integer userId, @PathVariable Integer groupId) {
+        groupService.insertUserToGroup(userId, groupId);
+        return ResponseEntity.noContent().build ();
+    }
+
+    @PreAuthorize("hasRole('TEAM_LEADER')")
+    @DeleteMapping("/{userId}/remove/{groupId}")
+    public ResponseEntity<?> deleteUserFromGroup(@PathVariable Integer userId, @PathVariable Integer groupId) {
+        groupService.deleteUserFromGroup(userId, groupId);
+        return ResponseEntity.noContent().build();
+    }
 }

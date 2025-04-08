@@ -8,10 +8,16 @@ import org.test.sotfgen.entity.UserEntity;
 
 @Service
 public interface UserService {
+
     Page<UserEntity> getUsers(Pageable pageable);
+
     UserEntity getUser(Integer id);
+
     UserEntity createUser(UserEntityDto user);
+
     UserEntity updateUser(UserEntityDto user, Integer id);
+
     void deleteUser(Integer id);
+
     UserEntity getUserById(Integer userId);
 }

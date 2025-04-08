@@ -4,6 +4,7 @@ import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -13,6 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.test.sotfgen.Exceptions.group.GroupNotFoundException;
+import org.test.sotfgen.Exceptions.group.MemberAndGroupRelationException;
 import org.test.sotfgen.Exceptions.user.UserDoesNotHasAuthority;
 import org.test.sotfgen.dto.GroupEntityDto;
 import org.test.sotfgen.dto.GroupSearchParams;
@@ -51,6 +53,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional
     public GroupEntity createGroup(GroupEntityDto group) {
         GroupEntity groupToCreate = new GroupEntity(group);
         UserEntity user = userService.getUserById(group.getOwnerId());
@@ -59,15 +62,48 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional
     public GroupEntity updateGroup(GroupEntityDto group, Integer id) {
         return groupRepository.save(updateGroupFields(group, id));
     }
 
     @Override
+    @Transactional
     public void deletePerson(Integer id) {
         GroupEntity groupToDelete = getGroupById(id);
         groupToDelete.setActive(false);
         groupRepository.save(groupToDelete);
+    }
+
+    @Override
+    @Transactional
+    public void insertUserToGroup(Integer userId, Integer groupId) {
+        UserEntity member = userService.getUserById(userId);
+        GroupEntity group = getGroupById(groupId);
+
+        if (group.getMembers().contains(member)) {
+            throw new MemberAndGroupRelationException("user with id " + userId + " already belongs to group with id " + groupId);
+        }
+
+        group.getMembers().add(member);
+        member.getGroups().add(group);
+
+        groupRepository.save(group);
+    }
+
+    @Override
+    public void deleteUserFromGroup(Integer userId, Integer groupId) {
+        UserEntity member = userService.getUserById(userId);
+        GroupEntity group = getGroupById(groupId);
+
+        if (!group.getMembers().contains(member)) {
+            throw new MemberAndGroupRelationException("user with id " + userId + " does not belong to group with id " + groupId);
+        }
+
+        group.getMembers().remove(member);
+        member.getGroups().remove(group);
+
+        groupRepository.save(group);
     }
 
     private GroupEntity updateGroupFields(GroupEntityDto group, Integer id) {

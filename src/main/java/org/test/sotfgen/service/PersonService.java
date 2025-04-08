@@ -9,9 +9,14 @@ import org.test.sotfgen.entity.PersonEntity;
 
 @Service
 public interface PersonService {
+
     Page<PersonEntity> getPersons(PersonSearchParams params, Pageable pageable);
+
     PersonEntity getPerson(Integer id);
+
     PersonEntity createPerson(PersonEntityDto person, Integer userId);
+
     PersonEntity updatePerson(PersonEntityDto person, Integer id);
+
     void deletePerson(Integer id);
 }

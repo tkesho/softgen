@@ -9,6 +9,7 @@ import org.test.sotfgen.entity.UserEntity;
 @Service
 public interface UserService {
 
+
     Page<UserEntity> getUsers(Pageable pageable);
 
     UserEntity getUser(Integer id);
@@ -20,4 +21,6 @@ public interface UserService {
     void deleteUser(Integer id);
 
     UserEntity getUserById(Integer userId);
+
+    boolean userHasAuthority(UserEntity user, String authorityName);
 }

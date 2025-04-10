@@ -59,4 +59,10 @@ public class UserServiceImpl implements UserService {
     public UserEntity getUserById(Integer id) {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(("user with id " + id + " not found")));
     }
+
+    public boolean userHasAuthority(UserEntity userToCheck, String authority) {
+        return userToCheck.getRoles().stream()
+                .flatMap(role -> role.getAuthorities().stream())
+                .anyMatch(auth -> authority.equals(auth.getAuthority()));
+    }
 }

@@ -1,5 +1,6 @@
 package org.test.sotfgen.config;
 
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,12 +31,15 @@ public class SecUser implements UserDetails {
                     return combined.stream();
                 })
                 .collect(Collectors.toList());
+        this.user = user;
     }
 
     private final String username;
     private final String password;
     private final boolean enabled;
     private final Collection<SimpleGrantedAuthority> authorities;
+    @Getter
+    private final UserEntity user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -71,4 +75,5 @@ public class SecUser implements UserDetails {
     public boolean isEnabled() {
         return enabled;
     }
+
 }

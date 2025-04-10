@@ -26,7 +26,6 @@ public class PersonServiceImpl implements PersonService {
         return personRepository.findAll((root, criteriaQuery, cb) -> getPredicate(params, root, cb), pageable);
     }
 
-
     @Override
     public PersonEntity getPerson(Integer id) {
         return getPersonById(id);

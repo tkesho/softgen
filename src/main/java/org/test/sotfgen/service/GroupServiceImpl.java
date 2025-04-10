@@ -9,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.test.sotfgen.Exceptions.group.GroupNotFoundException;
 import org.test.sotfgen.Exceptions.group.MemberAndGroupRelationException;
@@ -21,8 +18,8 @@ import org.test.sotfgen.dto.GroupSearchParams;
 import org.test.sotfgen.entity.GroupEntity;
 import org.test.sotfgen.entity.UserEntity;
 import org.test.sotfgen.repository.GroupRepository;
+import org.test.sotfgen.utils.UserServiceUtil;
 
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -37,7 +34,7 @@ public class GroupServiceImpl implements GroupService {
 
         Page<GroupEntity> page = groupRepository.findAll((root, criteriaQuery, cb) -> getPredicate(params, root, cb), pageable);
 
-        if (userHasAuthority("GROUP_READ_PRIVATE")) {
+        if (UserServiceUtil.activeUserHasAuthority("GROUP_READ_PRIVATE")) {
             return page;
         }
 
@@ -114,9 +111,7 @@ public class GroupServiceImpl implements GroupService {
             flag = true;
             newOwner = userService.getUserById(group.getOwnerId());
     
-            hasGroupCreate = newOwner.getRoles().stream()
-                    .flatMap(role -> role.getAuthorities().stream())
-                    .anyMatch(authority -> "GROUP_CREATE".equals(authority.getAuthority()));
+            hasGroupCreate = userService.userHasAuthority(newOwner, "GROUP_CREATE");
         }
 
         if (hasGroupCreate == flag) {
@@ -140,8 +135,8 @@ public class GroupServiceImpl implements GroupService {
         throw new UserDoesNotHasAuthority("user with id " + group.getOwnerId() + " does not have GROUP_CREATE permission to own groups");
     }
 
-    private GroupEntity getGroupById(Integer userId) {
-        return groupRepository.findById(userId).orElseThrow(() -> new GroupNotFoundException("group with id  " + userId + " not found"));
+    public  GroupEntity getGroupById(Integer id) {
+        return groupRepository.findById(id).orElseThrow(() -> new GroupNotFoundException("group with id  " + id + " not found"));
     }
 
     private Predicate getPredicate(GroupSearchParams params, Root<GroupEntity> root, CriteriaBuilder cb) {
@@ -160,13 +155,5 @@ public class GroupServiceImpl implements GroupService {
         }
 
         return predicate;
-    }
-
-    private static boolean userHasAuthority(String permission) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
-
-        return authorities.stream()
-                .anyMatch(a -> a.getAuthority().equals(permission));
     }
 }

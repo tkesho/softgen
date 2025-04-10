@@ -74,7 +74,12 @@ values ('USER_READ'),
        ('GROUP_UPDATE'),
        ('GROUP_CREATE'),
        ('GROUP_READ_PUBLIC'),
-       ('GROUP_READ_PRIVATE');
+       ('GROUP_READ_PRIVATE'),
+       ('POST_READ'),
+       ('POST_CREATE'),
+       ('POST_UPDATE'),
+       ('POST_DELETE');
+;
 
 insert into auth.roles_authorities (role_id, authority_id)
 select 1, a.id

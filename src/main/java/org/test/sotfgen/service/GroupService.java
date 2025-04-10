@@ -23,4 +23,6 @@ public interface GroupService {
     void insertUserToGroup(Integer userId, Integer groupId);
 
     void deleteUserFromGroup(Integer userId, Integer groupId);
+
+    GroupEntity getGroupById(Integer id);
 }

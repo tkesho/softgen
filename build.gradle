@@ -24,6 +24,7 @@ repositories {
 }
 
 dependencies {
+    //implementation("org.hibernate:hibernate-envers:6.6.6.Final")
     implementation 'software.amazon.awssdk:s3:2.20.130'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
     implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'

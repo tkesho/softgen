@@ -1,5 +1,6 @@
 package org.test.sotfgen.controller;
 
+import jakarta.validation.constraints.Max;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +24,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity<Page<UserEntity>> getUsers(
             @RequestParam(defaultValue = "0", required = false) Integer pageNumber,
-            @RequestParam(defaultValue = "10", required = false) Integer pageSize,
+            @RequestParam(defaultValue = "10", required = false) @Max(100) Integer pageSize,
             @RequestParam(defaultValue = "ASC", required = false) Sort.Direction sortDirection,
             @RequestParam(defaultValue = "id", required = false) String sortField
     ) {

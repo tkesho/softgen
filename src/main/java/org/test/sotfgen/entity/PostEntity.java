@@ -48,6 +48,6 @@ public class PostEntity extends Auditable {
     @Column(name = "hidden", nullable = false)
     private Boolean hidden = false;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     private Set<FileEntity> files = new LinkedHashSet<>();
 }

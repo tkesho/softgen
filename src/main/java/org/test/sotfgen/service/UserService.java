@@ -24,9 +24,9 @@ public interface UserService {
 
     void deactivateUser(SecUser secUser, Password password);
 
-    String resetPass(SecUser secUser);
+    void resetPass(SecUser secUser);
 
-    String resetPassAdmin(String username);
+    void resetPassAdmin(SecUser secUser, String username);
 
     void changePass(SecUser secUser, String oldPassword, Password newPassword);
 }

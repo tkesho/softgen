@@ -22,6 +22,14 @@ services:
     volumes:
       - minio_data:/val/lib/minio/data
 
+  mailHog:
+    container_name: mailHog
+    image: mailhog/mailhog:latest
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+
 volumes:
   pgdata:
   minio_data:

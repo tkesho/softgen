@@ -26,6 +26,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final UserServiceUtil userServiceUtil;
     private final PasswordEncoder passwordEncoder;
+    private final EmailSenderService emailSenderService;
 
     @Override
     public Page<UserEntity> getUsers(Pageable pageable) {
@@ -71,26 +72,30 @@ public class UserServiceImpl implements UserService {
         }
         UserEntity userToDeactivate = userServiceUtil.getUserById(secUser.getId());
         userToDeactivate.setActive(false);
+        String message = String.format("Hello %s, Your account has been deactivated!", userToDeactivate.getUsername());
+        emailSenderService.sendEmail(userToDeactivate.getEmail(), "Account deactivation", message);
         userRepository.save(userToDeactivate);
     }
 
     @Override
     @Transactional
-    public String resetPass(SecUser secUser) {
+    public void resetPass(SecUser secUser) {
         UserEntity user = userServiceUtil.getUserById(secUser.getId());
         String newPassword = userServiceUtil.generateRandomPassword(12);
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
-        return newPassword;
+        String message = String.format("Hello %s, Your new password has been set to: %s !", user.getUsername(), newPassword);
+        emailSenderService.sendEmail(user.getEmail(), "Password reset", message);
     }
 
     @Override
-    public String resetPassAdmin(String username) {
+    public void resetPassAdmin(SecUser secUser, String username) {
         UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
         String newPassword = userServiceUtil.generateRandomPassword(12);
         user.setPassword(passwordEncoder.encode(newPassword));
+        String message = String.format("Hello %s, user with name %s has reseted you password. New password is: %s !", username, userServiceUtil.getUserById(secUser.getId()).getUsername(), newPassword);
+        emailSenderService.sendEmail(user.getEmail(), "Password reset by admin user", message);
         userRepository.save(user);
-        return newPassword;
     }
 
     @Override
@@ -101,6 +106,8 @@ public class UserServiceImpl implements UserService {
         }
         UserEntity user = userServiceUtil.getUserById(secUser.getId());
         user.setPassword(passwordEncoder.encode(newPassword.getPassword()));
+        String message = String.format("Hello %s, Your password has been changed!", user.getUsername());
+        emailSenderService.sendEmail(user.getEmail(), "Password change", message);
         userRepository.save(user);
     }
 }

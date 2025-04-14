@@ -54,10 +54,11 @@ public class UserController {
     }
 
     @PutMapping("/resetPassword")
-    public ResponseEntity<String> resetPass(
+    public ResponseEntity<Void> resetPass(
             @AuthenticationPrincipal SecUser secUser
     ) {
-        return ResponseEntity.ok(userService.resetPass(secUser));
+        userService.resetPass(secUser);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/changePassword")
@@ -71,11 +72,13 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/resetPassword/{userId}")
-    public ResponseEntity<String> resetPassAdmin(
+    @PutMapping("/resetPassword/{username}")
+    public ResponseEntity<Void> resetPassAdmin(
+            @AuthenticationPrincipal SecUser secUser,
             String username
     ) {
-        return ResponseEntity.ok(userService.resetPassAdmin(username));
+        userService.resetPassAdmin(secUser, username);
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasAuthority('USER_UPDATE')")

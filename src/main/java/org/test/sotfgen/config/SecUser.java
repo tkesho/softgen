@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class SecUser implements UserDetails {
 
     public SecUser(UserEntity user) {
+        this.id = user.getId();
         this.username = user.getUsername();
         this.password = user.getPassword();
         this.enabled = user.getActive();
@@ -22,39 +23,31 @@ public class SecUser implements UserDetails {
                 .flatMap(role -> {
                     List<SimpleGrantedAuthority> combined = new ArrayList<>();
 
-                    combined.add(new SimpleGrantedAuthority(role.getRole()));
+                    combined.add(new SimpleGrantedAuthority(role.getName()));
 
                     for (AuthorityEntity authority : role.getAuthorities()) {
-                        combined.add(new SimpleGrantedAuthority(authority.getAuthority()));
+                        combined.add(new SimpleGrantedAuthority(authority.getName()));
                     }
 
                     return combined.stream();
                 })
                 .collect(Collectors.toList());
-        this.user = user;
     }
 
+    @Getter
+    private final Integer id;
+    @Getter
     private final String username;
+    @Getter
     private final String password;
     private final boolean enabled;
     private final Collection<SimpleGrantedAuthority> authorities;
-    @Getter
-    private final UserEntity user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
 
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
 
     @Override
     public boolean isAccountNonExpired() {
@@ -75,5 +68,4 @@ public class SecUser implements UserDetails {
     public boolean isEnabled() {
         return enabled;
     }
-
 }

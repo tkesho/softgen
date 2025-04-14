@@ -7,9 +7,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.test.sotfgen.dto.UserEntityDto;
+import org.test.sotfgen.config.SecUser;
+import org.test.sotfgen.dto.Password;
+import org.test.sotfgen.dto.UserDto;
 import org.test.sotfgen.entity.UserEntity;
 import org.test.sotfgen.service.UserService;
 
@@ -34,29 +37,72 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('USER_READ')")
     @GetMapping("/{id}")
-    public ResponseEntity<UserEntity> getUser(@PathVariable Integer id) {
+    public ResponseEntity<UserEntity> getUser(
+            @PathVariable Integer id
+    ) {
         return ResponseEntity.ok(userService.getUser(id));
     }
 
     @PreAuthorize("hasAuthority('USER_CREATE')")
     @PostMapping
-    public ResponseEntity<UserEntity> createUser(@RequestBody UserEntityDto user) {
+    public ResponseEntity<UserEntity> createUser(
+            @RequestBody UserDto user
+    ) {
         UserEntity createdUser = userService.createUser(user);
         var location = UriComponentsBuilder.fromPath("/users/" + createdUser.getId()).build().toUri();
         return ResponseEntity.created(location).body(createdUser);
     }
 
+    @PutMapping("/resetPassword")
+    public ResponseEntity<String> resetPass(
+            @AuthenticationPrincipal SecUser secUser
+    ) {
+        return ResponseEntity.ok(userService.resetPass(secUser));
+    }
+
+    @PutMapping("/changePassword")
+    public ResponseEntity<Void> changePass(
+            @AuthenticationPrincipal SecUser secUser,
+            @RequestParam String oldPassword,
+            @RequestBody Password newPassword
+    ) {
+        userService.changePass(secUser, oldPassword, newPassword);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/resetPassword/{userId}")
+    public ResponseEntity<String> resetPassAdmin(
+            String username
+    ) {
+        return ResponseEntity.ok(userService.resetPassAdmin(username));
+    }
+
     @PreAuthorize("hasAuthority('USER_UPDATE')")
-    @PutMapping("/{id}")
-    public ResponseEntity<UserEntity> updateUser(@PathVariable Integer id, @RequestBody UserEntityDto user) {
-        UserEntity updatedUser = userService.updateUser(user, id);
+    @PutMapping("/{userId}")
+    public ResponseEntity<UserEntity> updateUser(
+            @AuthenticationPrincipal SecUser secUser,
+            @PathVariable Integer userId,
+            @RequestBody UserDto userDto
+    ) {
+        UserEntity updatedUser = userService.updateEMail(secUser, userDto, userId);
         return ResponseEntity.accepted().body(updatedUser);
     }
 
-    @PreAuthorize("hasAuthority('SER_DELETE')")
+    @PreAuthorize("hasAuthority('USER_DELETE')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable Integer id) {
         userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/deactivate")
+    public ResponseEntity<Void> deactivateUser(
+            @AuthenticationPrincipal SecUser secUser,
+            @RequestBody Password password
+    ) {
+        userService.deactivateUser(secUser, password);
         return ResponseEntity.noContent().build();
     }
 }

@@ -8,58 +8,64 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.test.sotfgen.Exceptions.person.PersonNotFoundException;
-import org.test.sotfgen.dto.PersonEntityDto;
-import org.test.sotfgen.dto.PersonSearchParams;
-import org.test.sotfgen.entity.PersonEntity;
+import org.test.sotfgen.config.SecUser;
+import org.test.sotfgen.dto.PersonDetailDto;
+import org.test.sotfgen.dto.PersonDetailSearchParams;
+import org.test.sotfgen.entity.PersonDetailEntity;
 import org.test.sotfgen.entity.UserEntity;
-import org.test.sotfgen.repository.PersonRepository;
+import org.test.sotfgen.mapper.PersonDetailMapper;
+import org.test.sotfgen.repository.PersonDetailRepository;
+import org.test.sotfgen.utils.UserServiceUtil;
 
 @Service
 @RequiredArgsConstructor
-public class PersonServiceImpl implements PersonService {
+public class PersonDetailServiceImpl implements PersonDetailService {
 
-    private final PersonRepository personRepository;
-    private final UserService userService;
+    private final PersonDetailRepository personDetailRepository;
+    private final UserServiceUtil userServiceUtil;
+    private final PersonDetailMapper personDetailMapper;
 
     @Override
-    public Page<PersonEntity> getPersons(PersonSearchParams params, Pageable pageable) {
-        return personRepository.findAll((root, criteriaQuery, cb) -> getPredicate(params, root, cb), pageable);
+    public Page<PersonDetailEntity> getPersons(PersonDetailSearchParams params, Pageable pageable) {
+        return personDetailRepository.findAll((root, criteriaQuery, cb) -> getPredicate(params, root, cb), pageable);
     }
 
     @Override
-    public PersonEntity getPerson(Integer id) {
+    public PersonDetailEntity getPerson(Integer id) {
         return getPersonById(id);
     }
 
     @Override
     @Transactional
-    public PersonEntity createPerson(PersonEntityDto person, Integer userId) {
-        PersonEntity personToCreate = new PersonEntity(person);
-        UserEntity userToAttach = userService.getUserById(userId);
+    public PersonDetailEntity createPerson(PersonDetailDto personDto, Integer userId) {
+        PersonDetailEntity personToCreate = personDetailMapper.personDetailDtoToPersonDetail(personDto);
+        UserEntity userToAttach = userServiceUtil.getUserById(userId);
         personToCreate.setUser(userToAttach);
-        return personRepository.save(personToCreate);
+        return personDetailRepository.save(personToCreate);
     }
 
     @Override
     @Transactional
-    public PersonEntity updatePerson(PersonEntityDto person, Integer id) {
-        PersonEntity personToUpdate = getPerson(id);
+    public PersonDetailEntity updatePerson(SecUser secUser, PersonDetailDto person, Integer id) {
+        PersonDetailEntity personToUpdate = getPerson(id);
         updatePersonFields(person, personToUpdate);
-        return personRepository.save(personToUpdate);
+        return personDetailRepository.save(personToUpdate);
     }
+
+
 
     @Override
     @Transactional
     public void deletePerson(Integer id) {
-        PersonEntity personToDelete = getPersonById(id);
-        personRepository.delete(personToDelete);
+        PersonDetailEntity personToDelete = getPersonById(id);
+        personDetailRepository.delete(personToDelete);
     }
 
-    private PersonEntity getPersonById(Integer id) {
-        return personRepository.findByUserId(id).orElseThrow(() -> new PersonNotFoundException("person with id " + id + " not found"));
+    private PersonDetailEntity getPersonById(Integer id) {
+        return personDetailRepository.findByUserId(id).orElseThrow(() -> new PersonNotFoundException("person with id " + id + " not found"));
     }
 
-    private void updatePersonFields(PersonEntityDto person, PersonEntity personToUpdate) {
+    private void updatePersonFields(PersonDetailDto person, PersonDetailEntity personToUpdate) {
         if (person.getFirstName() != null) {
             personToUpdate.setFirstName(person.getFirstName());
         }
@@ -80,7 +86,7 @@ public class PersonServiceImpl implements PersonService {
         }
     }
 
-    private Predicate getPredicate(PersonSearchParams params, Root<PersonEntity> root, CriteriaBuilder cb) {
+    private Predicate getPredicate(PersonDetailSearchParams params, Root<PersonDetailEntity> root, CriteriaBuilder cb) {
         Predicate predicate = cb.conjunction();
         if (StringUtils.isNotBlank(params.getFirstName())) {
             predicate = cb.and(predicate, cb.like(root.get("first_name"), "%" + params.getFirstName() + "%"));
@@ -100,7 +106,7 @@ public class PersonServiceImpl implements PersonService {
         if (params.getGender() != null) {
             predicate = cb.and(predicate, cb.equal(root.get("gender"), params.getGender()));
         }
-        Join<PersonEntity, UserEntity> user = root.join("user", JoinType.LEFT);
+        Join<PersonDetailEntity, UserEntity> user = root.join("user", JoinType.LEFT);
         predicate = cb.and(predicate, cb.equal(user.get("active"), true));
         return predicate;
     }

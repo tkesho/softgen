@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.ColumnTransformer;
-import org.test.sotfgen.dto.GroupEntityDto;
 import org.test.sotfgen.model.base.Auditable;
 
 import java.util.Set;
@@ -17,12 +16,11 @@ import java.util.Set;
 @Setter
 @Entity
 @NoArgsConstructor
-@Table(name = "groups", schema = "people")
-@SequenceGenerator(name = "groups_id_gen", schema = "people", sequenceName = "groups_id_seq", allocationSize = 1)
+@Table(name = "group", schema = "social")
 public class GroupEntity extends Auditable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "groups_id_gen")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -41,8 +39,7 @@ public class GroupEntity extends Auditable {
     @JsonManagedReference
     @ManyToMany
     @JoinTable(
-            name = "users_groups",
-            schema = "people",
+            name = "person_detail_group", schema = "social",
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
@@ -51,32 +48,15 @@ public class GroupEntity extends Auditable {
     @NotNull
     @ColumnDefault("true")
     @Column(name = "active")
-    private Boolean active;
+    private Boolean active = true;
 
     @ColumnDefault("'PUBLIC'")
     @ColumnTransformer(write = "?::privacy")
     @Enumerated(EnumType.STRING)
     @Column(name = "privacy")
-    private Privacy privacy;
+    private Privacy privacy = Privacy.PUBLIC;
 
     public enum Privacy {
         PUBLIC, PRIVATE
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if (this.active == null) {
-            this.active = true;
-        }
-        if (this.privacy == null) {
-            this.privacy = Privacy.PUBLIC;
-        }
-    }
-
-    public GroupEntity(GroupEntityDto group) {
-        this.name = group.getName();
-        this.description = group.getDescription();
-        this.privacy = group.getPrivacy();
-        this.active = group.getActive();
     }
 }

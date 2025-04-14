@@ -10,13 +10,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class UserEntityDto {
-
-    public UserEntityDto(String username, String password, String email) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-    }
+public class UserDto {
 
     @NotNull
     @NotBlank

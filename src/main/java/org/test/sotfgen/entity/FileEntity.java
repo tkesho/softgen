@@ -10,11 +10,10 @@ import org.test.sotfgen.model.base.Auditable;
 @Getter
 @Setter
 @Entity
-@SequenceGenerator(name = "files_id_gen", sequenceName = "files_id_seq", allocationSize = 1, schema = "posts")
-@Table(name = "files", schema = "posts")
+@Table(name = "file", schema = "content")
 public class FileEntity extends Auditable {
     @Id
-    @GeneratedValue(generator = "files_id_gen", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -35,8 +34,4 @@ public class FileEntity extends Auditable {
     @NotNull
     @Column(name = "size", nullable = false)
     private Integer size;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "post_id")
-    private PostEntity post;
 }

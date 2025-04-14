@@ -5,15 +5,14 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "authorities", schema = "auth")
-@SequenceGenerator(name = "authority_id_gen", sequenceName = "authorities_id_seq", allocationSize = 1)
+@Table(name = "authority", schema = "security")
 public class AuthorityEntity {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(generator = "authority_id_gen", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "authority")
-    private String authority;
+    @Column(name = "name")
+    private String name;
 }

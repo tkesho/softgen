@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.test.sotfgen.dto.UserEntityDto;
+import org.hibernate.annotations.ColumnDefault;
 import org.test.sotfgen.model.base.Auditable;
 
 import java.util.Set;
@@ -15,16 +15,15 @@ import java.util.Set;
 @Setter
 @Getter
 @NoArgsConstructor
-@Table(name = "users", schema = "auth")
-@SequenceGenerator(name = "user_id_gen", sequenceName = "users_id_seq", allocationSize = 1, schema = "auth")
+@Table(name = "user", schema = "security")
 public class UserEntity extends Auditable {
 
     @Id
-    @GeneratedValue(generator = "user_id_gen", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
     private Integer id;
 
-    @Column(name = "username", nullable = false,  unique = true)
+    @Column(name = "username", nullable = false, unique = true, updatable = false)
     private String username;
 
     @JsonIgnore
@@ -34,26 +33,19 @@ public class UserEntity extends Auditable {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @ColumnDefault("true")
     @Column(name = "active", nullable = false)
-    private Boolean active;
+    private Boolean active = true;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "users_roles", schema = "auth",
+            name = "user_role", schema = "security",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<RoleEntity> roles;
 
-
     @JsonBackReference
     @ManyToMany(mappedBy = "members", fetch =  FetchType.EAGER)
     private Set<GroupEntity> groups;
-
-    public UserEntity(UserEntityDto user) {
-        this.username = user.getUsername();
-        this.password = user.getPassword();
-        this.email = user.getEmail();
-        this.active = true;
-    }
 }

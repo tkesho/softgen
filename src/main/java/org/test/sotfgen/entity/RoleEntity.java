@@ -7,21 +7,20 @@ import java.util.Set;
 
 @Entity
 @Data
-@Table(name = "roles", schema = "auth")
-@SequenceGenerator(name = "role_id_gen", sequenceName = "roles_id_seq", allocationSize = 1)
+@Table(name = "role", schema = "security")
 public class RoleEntity {
 
     @Id
-    @GeneratedValue(generator = "role_id_gen", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "role")
-    private String role;
+    @Column(name = "name")
+    private String name;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "roles_authorities", schema = "auth",
+            name = "role_authority", schema = "security",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "authority_id")
     )

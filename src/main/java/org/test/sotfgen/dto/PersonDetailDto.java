@@ -6,14 +6,14 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.test.sotfgen.entity.PersonEntity;
+import org.test.sotfgen.entity.PersonDetailEntity;
 
 import java.time.LocalDate;
 
 @Setter
 @Getter
 @NoArgsConstructor
-public class PersonEntityDto {
+public class PersonDetailDto {
     @NotNull
     @NotBlank
     private String firstName;
@@ -25,13 +25,13 @@ public class PersonEntityDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
     @NotBlank
-    private String Address;
+    private String address;
     @NotNull
     @NotBlank
     private String phoneNumber;
     @NotNull
     @NotBlank
-    private PersonEntity.Gender gender;
+    private PersonDetailEntity.Gender gender;
     @NotNull
     @NotBlank
     private String nationalId;

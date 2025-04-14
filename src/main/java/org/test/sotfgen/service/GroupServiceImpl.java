@@ -9,14 +9,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.test.sotfgen.Exceptions.group.GroupNotFoundException;
 import org.test.sotfgen.Exceptions.group.MemberAndGroupRelationException;
 import org.test.sotfgen.Exceptions.user.UserDoesNotHasAuthority;
-import org.test.sotfgen.dto.GroupEntityDto;
+import org.test.sotfgen.config.SecUser;
+import org.test.sotfgen.dto.GroupDto;
 import org.test.sotfgen.dto.GroupSearchParams;
 import org.test.sotfgen.entity.GroupEntity;
 import org.test.sotfgen.entity.UserEntity;
+import org.test.sotfgen.mapper.GroupMapper;
 import org.test.sotfgen.repository.GroupRepository;
 import org.test.sotfgen.utils.UserServiceUtil;
 
@@ -28,13 +32,19 @@ public class GroupServiceImpl implements GroupService {
 
     private final GroupRepository groupRepository;
     private final UserService userService;
+    private final UserServiceUtil userServiceUtil;
+    private final GroupMapper groupMapper;
 
     @Override
     public Page<GroupEntity> getGroups(GroupSearchParams params, Pageable pageable) {
 
         Page<GroupEntity> page = groupRepository.findAll((root, criteriaQuery, cb) -> getPredicate(params, root, cb), pageable);
 
-        if (UserServiceUtil.activeUserHasAuthority("GROUP_READ_PRIVATE")) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        SecUser user = (SecUser) authentication.getPrincipal();
+
+
+        if (userServiceUtil.userHasAuthority(user.getId(), "GROUP_READ_PRIVATE")) {
             return page;
         }
 
@@ -51,17 +61,17 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional
-    public GroupEntity createGroup(GroupEntityDto group) {
-        GroupEntity groupToCreate = new GroupEntity(group);
-        UserEntity user = userService.getUserById(group.getOwnerId());
+    public GroupEntity createGroup(SecUser secUser, GroupDto groupDto) {
+        GroupEntity groupToCreate = groupMapper.groupDtoToGroupEntity(groupDto);
+        UserEntity user = userServiceUtil.getUserById(secUser.getId());
         groupToCreate.setOwner(user);
         return groupRepository.save(groupToCreate);
     }
 
     @Override
     @Transactional
-    public GroupEntity updateGroup(GroupEntityDto group, Integer id) {
-        return groupRepository.save(updateGroupFields(group, id));
+    public GroupEntity updateGroup(SecUser secUser, GroupDto group, Integer groupId) {
+        return groupRepository.save(updateGroupFields(group, groupId));
     }
 
     @Override
@@ -75,7 +85,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional
     public void insertUserToGroup(Integer userId, Integer groupId) {
-        UserEntity member = userService.getUserById(userId);
+        UserEntity member = userServiceUtil.getUserById(userId);
         GroupEntity group = getGroupById(groupId);
 
         if (group.getMembers().contains(member)) {
@@ -90,7 +100,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public void deleteUserFromGroup(Integer userId, Integer groupId) {
-        UserEntity member = userService.getUserById(userId);
+        UserEntity member = userServiceUtil.getUserById(userId);
         GroupEntity group = getGroupById(groupId);
 
         if (!group.getMembers().contains(member)) {
@@ -103,39 +113,36 @@ public class GroupServiceImpl implements GroupService {
         groupRepository.save(group);
     }
 
-    private GroupEntity updateGroupFields(GroupEntityDto group, Integer id) {
-        boolean hasGroupCreate = false;
-        boolean flag = false;
+    private GroupEntity updateGroupFields(GroupDto groupDto, Integer groupId) {
         UserEntity newOwner = null;
-        if(group.getOwnerId() != null) {
+        boolean flag = false;
+
+        if (groupDto.getOwnerId() != null) {
+            newOwner = userServiceUtil.getUserById(groupDto.getOwnerId());
             flag = true;
-            newOwner = userService.getUserById(group.getOwnerId());
-    
-            hasGroupCreate = userService.userHasAuthority(newOwner, "GROUP_CREATE");
+            if (!userServiceUtil.userHasAuthority(groupDto.getOwnerId(), "GROUP_CREATE")) {
+                throw new UserDoesNotHasAuthority("user with id " + newOwner.getId() + " does not have GROUP_CREATE permission to own groups");
+            }
         }
 
-        if (hasGroupCreate == flag) {
-            GroupEntity groupToUpdate = getGroupById(id);
-            if (group.getName() != null) {
-                groupToUpdate.setName(group.getName());
-            }
-            groupToUpdate.setDescription(group.getDescription());
-            if(flag) {
-                groupToUpdate.setOwner(newOwner);
-            }
-            if(group.getActive() != null) {
-                groupToUpdate.setActive(group.getActive());
-            }
-            if (group.getActive() != null) {
-                groupToUpdate.setPrivacy(group.getPrivacy());
-            }
-            return groupToUpdate;
+        GroupEntity groupToUpdate = getGroupById(groupId);
+        if (groupDto.getName() != null) {
+            groupToUpdate.setName(groupDto.getName());
         }
-
-        throw new UserDoesNotHasAuthority("user with id " + group.getOwnerId() + " does not have GROUP_CREATE permission to own groups");
+        groupToUpdate.setDescription(groupDto.getDescription());
+        if (flag) {
+            groupToUpdate.setOwner(newOwner);
+        }
+        if (groupDto.getActive() != null) {
+            groupToUpdate.setActive(groupDto.getActive());
+        }
+        if (groupDto.getActive() != null) {
+            groupToUpdate.setPrivacy(groupDto.getPrivacy());
+        }
+        return groupToUpdate;
     }
 
-    public  GroupEntity getGroupById(Integer id) {
+    public GroupEntity getGroupById(Integer id) {
         return groupRepository.findById(id).orElseThrow(() -> new GroupNotFoundException("group with id  " + id + " not found"));
     }
 
@@ -150,7 +157,9 @@ public class GroupServiceImpl implements GroupService {
         if (params.getOwnerId() != null) {
             predicate = cb.and(predicate, cb.equal(root.get("owner_id"), params.getOwnerId()));
         }
-        if (params.getActive() != null) {
+        if (params.getActive() != null) {{
+            predicate = cb.and(predicate, cb.equal(root.get("active"), params.getActive()));
+        }
             predicate = cb.and(predicate, cb.equal(root.get("active"), params.getActive()));
         }
 

@@ -12,13 +12,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.test.sotfgen.Exceptions.post.PostNotFoundException;
 import org.test.sotfgen.Exceptions.user.UserDoesNotHasAuthority;
-import org.test.sotfgen.dto.PostEntityDto;
+import org.test.sotfgen.config.SecUser;
+import org.test.sotfgen.dto.PostDto;
 import org.test.sotfgen.dto.PostSearchParams;
 import org.test.sotfgen.entity.FileEntity;
 import org.test.sotfgen.entity.GroupEntity;
 import org.test.sotfgen.entity.PostEntity;
 import org.test.sotfgen.entity.UserEntity;
+import org.test.sotfgen.mapper.PostMapper;
 import org.test.sotfgen.repository.PostRepository;
+import org.test.sotfgen.utils.UserServiceUtil;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,9 +31,10 @@ import java.util.Set;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final UserService userService;
+    private final UserServiceUtil userServiceUtil;
     private final GroupService groupService;
     private final FileService fileService;
+    private final PostMapper postMapper;
 
     @Override
     public Page<PostEntity> getPosts(PostSearchParams params, PageRequest of) {
@@ -44,46 +48,29 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public PostEntity createPost(PostEntityDto post) {
-        UserEntity author = userService.getUserById(post.getUserId());
-        GroupEntity group = groupService.getGroupById(post.getGroupId());
+    public PostEntity createPost(SecUser secUser, Integer groupId, PostDto postDto) {
+        UserEntity author = userServiceUtil.getUserById(secUser.getId());
+        GroupEntity group = groupService.getGroupById(postDto.getGroupId());
 
-        if (userService.userHasAuthority(author, "POST_CREATE")) {
-            PostEntity postToCreate = new PostEntity(post);
+            PostEntity postToCreate = postMapper.postDtoToPostEntity(postDto);
             postToCreate.setUser(author);
             postToCreate.setGroup(group);
             Set<FileEntity> files = new HashSet<>();
-            if(post.getFileIds() != null && !post.getFileIds().isEmpty()) {
-                post.getFileIds().forEach(file -> files.add(fileService.getFileById(file)));
+            if(postDto.getFileIds() != null && !postDto.getFileIds().isEmpty()) {
+                postDto.getFileIds().forEach(file -> files.add(fileService.getFileById(file)));
             }
             postToCreate.setFiles(files);
             return postRepository.save(postToCreate);
-        } else {
-            throw new UserDoesNotHasAuthority("user does not have authority to create a post");
-        }
     }
 
     @Override
     @Transactional
-    public PostEntity updatePost(PostEntityDto post, Integer postId) {
-        PostEntity existingPost = getPostById(postId);
+    public PostEntity updatePost(SecUser userId, PostDto post, Integer postId) {
 
-        if (StringUtils.isNotBlank(post.getTitle())) {
-            existingPost.setTitle(post.getTitle());
-        }
-        if (StringUtils.isNotBlank(post.getBody())) {
-            existingPost.setBody(post.getBody());
-        }
-        if (post.getHidden() != null) {
-            existingPost.setHidden(post.getHidden());
-        }
-        if (post.getFileIds() != null && !post.getFileIds().isEmpty()) {
-            Set<FileEntity> files = new HashSet<>();
-            post.getFileIds().forEach(postFileId -> files.add(fileService.getFileById(postFileId)));
-            existingPost.setFiles(files);
-        }
+        PostEntity postToUpdate = getPostById(postId);
 
-        return postRepository.save(existingPost);
+
+        return postRepository.save(postToUpdate);
     }
 
     @Override
@@ -95,6 +82,40 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostEntity getPostById(Integer postId) {
         return postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post with id " + postId + " not found"));
+    }
+
+    private PostEntity updatePostFields(PostDto postDto, Integer postInteger) {
+        PostEntity newPost = null;
+
+        if(postDto.getOwnerId() != null && !postDto.getOwnerId().equals(getPostById(postInteger).getUser().getId())) {
+            if(!userServiceUtil.userHasAuthority(postDto.getOwnerId(), "POST_CREATE")) {
+                throw new UserDoesNotHasAuthority("user with id " + postDto.getOwnerId() + " does not have POST_CREATE permission to own posts");
+            }
+        }
+
+        if (postDto.getGroupId() != null && !postDto.getGroupId().equals(getPostById(postInteger).getGroup().getId())) {
+            if(!userServiceUtil.userHasRole(postDto.getGroupId(), "ROLE_ADMIN")) {
+                throw new UserDoesNotHasAuthority("user with id " + postDto.getOwnerId() + " does not have ADMIN role change own posts");
+            }
+        } else {
+            throw new UserDoesNotHasAuthority("user with id " + postDto.getOwnerId() + " does not have POST_CREATE permission to own posts");
+        }
+
+        if (postDto.getTitle() != null && !postDto.getTitle().isEmpty()) {
+            newPost.setTitle(postDto.getTitle());
+        }
+        if (postDto.getBody() != null && StringUtils.isNotBlank(postDto.getBody())) {
+            newPost.setBody(postDto.getBody());
+        }
+        if (postDto.getHidden() != null) {
+            newPost.setHidden(postDto.getHidden());
+        }
+        if (postDto.getFileIds() != null && !postDto.getFileIds().isEmpty()) {
+            Set<FileEntity> files = new HashSet<>();
+            postDto.getFileIds().forEach(postFileId -> files.add(fileService.getFileById(postFileId)));
+            newPost.setFiles(files);
+        }
+        return newPost;
     }
 
     private Predicate getPredicate(Root<PostEntity> root, CriteriaBuilder cb, PostSearchParams params) {

@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-import org.test.sotfgen.dto.PostEntityDto;
 import org.test.sotfgen.model.base.Auditable;
 
 import java.util.LinkedHashSet;
@@ -17,11 +16,10 @@ import java.util.Set;
 @Setter
 @Entity
 @NoArgsConstructor
-@SequenceGenerator(name = "posts_id_gen", sequenceName = "posts_id_seq", allocationSize = 1, schema = "posts")
-@Table(name = "posts", schema = "posts")
+@Table(name = "post", schema = "content")
 public class PostEntity extends Auditable {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "posts_id_gen")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -52,9 +50,4 @@ public class PostEntity extends Auditable {
 
     @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
     private Set<FileEntity> files = new LinkedHashSet<>();
-
-    public PostEntity(PostEntityDto postEntityDto) {
-        this.title = postEntityDto.getTitle();
-        this.body = postEntityDto.getBody();
-    }
 }

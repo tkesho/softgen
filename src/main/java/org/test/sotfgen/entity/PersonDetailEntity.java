@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnTransformer;
-import org.test.sotfgen.dto.PersonEntityDto;
 import org.test.sotfgen.model.base.Auditable;
 
 import java.time.LocalDate;
@@ -15,12 +14,11 @@ import java.time.LocalDate;
 @Setter
 @Getter
 @Entity
-@Table(name = "persons", schema = "people")
+@Table(name = "person_detail", schema = "social")
 @NoArgsConstructor
-@SequenceGenerator(name = "persons_id_gen", sequenceName = "persons_id_seq", allocationSize = 1, schema = "people")
-public class PersonEntity extends Auditable {
+public class PersonDetailEntity extends Auditable {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "persons_id_gen")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -38,7 +36,6 @@ public class PersonEntity extends Auditable {
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     @ColumnTransformer(write = "?::gender")
     @Column(name = "gender", nullable = false, length = 16)
@@ -66,15 +63,5 @@ public class PersonEntity extends Auditable {
 
     public enum Gender {
         MALE, FEMALE, OTHER
-    }
-
-    public PersonEntity(PersonEntityDto dto) {
-        this.firstName = dto.getFirstName();
-        this.lastName = dto.getLastName();
-        this.birthDate = dto.getBirthDate();
-        this.gender = dto.getGender();
-        this.phoneNumber = dto.getPhoneNumber();
-        this.address = dto.getAddress();
-        this.nationalId = dto.getNationalId();
     }
 }

@@ -3,7 +3,8 @@ package org.test.sotfgen.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.test.sotfgen.dto.GroupEntityDto;
+import org.test.sotfgen.config.SecUser;
+import org.test.sotfgen.dto.GroupDto;
 import org.test.sotfgen.dto.GroupSearchParams;
 import org.test.sotfgen.entity.GroupEntity;
 
@@ -14,9 +15,9 @@ public interface GroupService {
 
     GroupEntity getGroup(Integer id);
 
-    GroupEntity createGroup(GroupEntityDto group);
+    GroupEntity createGroup(SecUser author, GroupDto group);
 
-    GroupEntity updateGroup(GroupEntityDto group, Integer id);
+    GroupEntity updateGroup(SecUser author, GroupDto group, Integer groupId);
 
     void deletePerson(Integer id);
 

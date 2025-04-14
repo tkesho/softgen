@@ -3,7 +3,9 @@ package org.test.sotfgen.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.test.sotfgen.dto.UserEntityDto;
+import org.test.sotfgen.config.SecUser;
+import org.test.sotfgen.dto.Password;
+import org.test.sotfgen.dto.UserDto;
 import org.test.sotfgen.entity.UserEntity;
 
 @Service
@@ -14,13 +16,17 @@ public interface UserService {
 
     UserEntity getUser(Integer id);
 
-    UserEntity createUser(UserEntityDto user);
+    UserEntity createUser(UserDto user);
 
-    UserEntity updateUser(UserEntityDto user, Integer id);
+    UserEntity updateEMail(SecUser secUser, UserDto user, Integer id);
 
     void deleteUser(Integer id);
 
-    UserEntity getUserById(Integer userId);
+    void deactivateUser(SecUser secUser, Password password);
 
-    boolean userHasAuthority(UserEntity user, String authorityName);
+    String resetPass(SecUser secUser);
+
+    String resetPassAdmin(String username);
+
+    void changePass(SecUser secUser, String oldPassword, Password newPassword);
 }

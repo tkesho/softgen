@@ -6,9 +6,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.test.sotfgen.dto.GroupEntityDto;
+import org.test.sotfgen.config.SecUser;
+import org.test.sotfgen.dto.GroupDto;
 import org.test.sotfgen.dto.GroupSearchParams;
 import org.test.sotfgen.entity.GroupEntity;
 import org.test.sotfgen.service.GroupService;
@@ -40,16 +42,19 @@ public class GroupController {
 
     @PreAuthorize("hasAuthority('GROUP_CREATE')")
     @PostMapping
-    public ResponseEntity<GroupEntity> createGroup(@RequestBody GroupEntityDto group) {
-        GroupEntity createdGroup = groupService.createGroup(group);
+    public ResponseEntity<GroupEntity> createGroup(@AuthenticationPrincipal SecUser secUser, @RequestBody GroupDto group) {
+        GroupEntity createdGroup = groupService.createGroup(secUser, group);
         var location = UriComponentsBuilder.fromPath("/groups/" + createdGroup.getId()).build().toUri();
         return ResponseEntity.created(location).body(createdGroup);
     }
 
     @PreAuthorize("hasAuthority('GROUP_UPDATE')")
-    @PutMapping("/{id}")
-    public ResponseEntity<GroupEntity> updateGroup (@PathVariable Integer id, @RequestBody GroupEntityDto group) {
-        GroupEntity updatedGroup = groupService.updateGroup(group, id);
+    @PutMapping("/{groupId}")
+    public ResponseEntity<GroupEntity> updateGroup (
+            @AuthenticationPrincipal SecUser secUser,
+            @RequestBody GroupDto group,
+            @PathVariable Integer groupId) {
+        GroupEntity updatedGroup = groupService.updateGroup(secUser, group, groupId);
         return ResponseEntity.accepted().body(updatedGroup);
     }
 

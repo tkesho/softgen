@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.test.sotfgen.Exceptions.email.EmailNotFoundException;
 import org.test.sotfgen.dto.EmailDto;
 import org.test.sotfgen.entity.EmailEntity;
 import org.test.sotfgen.repository.EmailRepository;
@@ -24,7 +25,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public EmailEntity getEmailById(Integer id) {
-        return emailRepository.findById(id).orElseThrow(() -> new RuntimeException("Email not found"));
+        return emailRepository.findById(id).orElseThrow(() -> new EmailNotFoundException("Email with id " + id + " not found"));
     }
 
     private Predicate buildPredicate(EmailDto params, Root<EmailEntity> root, CriteriaBuilder cb) {

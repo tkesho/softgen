@@ -35,7 +35,7 @@ public class PostEntity extends Auditable {
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false)
     private UserEntity user;
 
     @NotNull
@@ -50,4 +50,11 @@ public class PostEntity extends Auditable {
 
     @OneToMany(fetch = FetchType.EAGER)
     private Set<FileEntity> files = new LinkedHashSet<>();
+
+    @PrePersist
+    private void prePersist() {
+        if (this.hidden == null) {
+            this.hidden = false;
+        }
+    }
 }

@@ -65,6 +65,8 @@ public class GroupServiceImpl implements GroupService {
         GroupEntity groupToCreate = groupMapper.groupDtoToGroupEntity(groupDto);
         UserEntity user = userServiceUtil.getUserById(secUser.getId());
         groupToCreate.setOwner(user);
+        groupToCreate.setActive(true);
+        groupToCreate.setPrivacy(GroupEntity.Privacy.PUBLIC);
         return groupRepository.save(groupToCreate);
     }
 
@@ -142,8 +144,8 @@ public class GroupServiceImpl implements GroupService {
         return groupToUpdate;
     }
 
-    public GroupEntity getGroupById(Integer id) {
-        return groupRepository.findById(id).orElseThrow(() -> new GroupNotFoundException("group with id  " + id + " not found"));
+    public GroupEntity getGroupById(Integer groupId) {
+        return groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("group with id " + groupId + " not found"));
     }
 
     private Predicate getPredicate(GroupSearchParams params, Root<GroupEntity> root, CriteriaBuilder cb) {

@@ -16,7 +16,7 @@ create table content.post
     id serial primary key,
     title varchar(255) not null,
     body varchar(1024) not null,
-    user_id integer not null constraint post_person_detail_fk references social.person_detail (id),
+    owner_id integer not null constraint post_person_detail_fk references social.person_detail (id),
     group_id integer not null constraint post_group_fk references social.group (id),
     hidden boolean not null default false,
 

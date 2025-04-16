@@ -15,11 +15,9 @@ import org.test.sotfgen.Exceptions.user.UserDoesNotHasAuthority;
 import org.test.sotfgen.config.SecUser;
 import org.test.sotfgen.dto.PostDto;
 import org.test.sotfgen.dto.PostSearchParams;
-import org.test.sotfgen.entity.FileEntity;
-import org.test.sotfgen.entity.GroupEntity;
-import org.test.sotfgen.entity.PostEntity;
-import org.test.sotfgen.entity.UserEntity;
+import org.test.sotfgen.entity.*;
 import org.test.sotfgen.mapper.PostMapper;
+import org.test.sotfgen.repository.PostHistoryRepository;
 import org.test.sotfgen.repository.PostRepository;
 import org.test.sotfgen.utils.UserServiceUtil;
 
@@ -35,6 +33,7 @@ public class PostServiceImpl implements PostService {
     private final GroupService groupService;
     private final FileService fileService;
     private final PostMapper postMapper;
+    private final PostHistoryRepository postHistoryRepository;
 
     @Override
     public Page<PostEntity> getPosts(PostSearchParams params, PageRequest of) {
@@ -50,7 +49,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostEntity createPost(SecUser secUser, Integer groupId, PostDto postDto) {
         UserEntity author = userServiceUtil.getUserById(secUser.getId());
-        GroupEntity group = groupService.getGroupById(postDto.getGroupId());
+        GroupEntity group = groupService.getGroupById(groupId);
 
             PostEntity postToCreate = postMapper.postDtoToPostEntity(postDto);
             postToCreate.setUser(author);
@@ -60,23 +59,30 @@ public class PostServiceImpl implements PostService {
                 postDto.getFileIds().forEach(file -> files.add(fileService.getFileById(file)));
             }
             postToCreate.setFiles(files);
-            return postRepository.save(postToCreate);
+            postRepository.save(postToCreate);
+            postRepository.flush();
+            createHistoryEntry(postToCreate);
+            return postToCreate;
     }
 
     @Override
     @Transactional
     public PostEntity updatePost(SecUser userId, PostDto post, Integer postId) {
 
-        PostEntity postToUpdate = getPostById(postId);
+        PostEntity postToUpdate = updatePostFields(post, postId);
+        postToUpdate = postRepository.save(postToUpdate);
 
+        createHistoryEntry(postToUpdate);
 
-        return postRepository.save(postToUpdate);
+        return postToUpdate;
     }
 
     @Override
     public void deletePost(Integer postId) {
         PostEntity ToDelete = getPostById(postId);
         postRepository.delete(ToDelete);
+        postRepository.flush();
+        createHistoryEntry(ToDelete);
     }
 
     @Override
@@ -84,28 +90,35 @@ public class PostServiceImpl implements PostService {
         return postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post with id " + postId + " not found"));
     }
 
-    private PostEntity updatePostFields(PostDto postDto, Integer postInteger) {
-        PostEntity newPost = null;
-
-        if(postDto.getOwnerId() != null && !postDto.getOwnerId().equals(getPostById(postInteger).getUser().getId())) {
+    private PostEntity updatePostFields(PostDto postDto, Integer postId) {
+        if(postDto.getOwnerId() != null && !postDto.getOwnerId().equals(getPostById(postId).getUser().getId())) {
             if(!userServiceUtil.userHasAuthority(postDto.getOwnerId(), "POST_CREATE")) {
                 throw new UserDoesNotHasAuthority("user with id " + postDto.getOwnerId() + " does not have POST_CREATE permission to own posts");
             }
         }
 
-        if (postDto.getGroupId() != null && !postDto.getGroupId().equals(getPostById(postInteger).getGroup().getId())) {
+        if (postDto.getGroupId() != null && !postDto.getGroupId().equals(getPostById(postId).getGroup().getId())) {
             if(!userServiceUtil.userHasRole(postDto.getGroupId(), "ROLE_ADMIN")) {
-                throw new UserDoesNotHasAuthority("user with id " + postDto.getOwnerId() + " does not have ADMIN role change own posts");
+                throw new UserDoesNotHasAuthority("user with id " + postDto.getOwnerId() + " does not have ADMIN role to change location of the post");
             }
-        } else {
-            throw new UserDoesNotHasAuthority("user with id " + postDto.getOwnerId() + " does not have POST_CREATE permission to own posts");
+            if(postDto.getGroupId() != null) {
+                throw new UserDoesNotHasAuthority("user with id " + postDto.getOwnerId() + " does not have POST_CREATE permission to own posts");
+            }
         }
 
-        if (postDto.getTitle() != null && !postDto.getTitle().isEmpty()) {
+        PostEntity newPost = getPostById(postId);
+
+        if (postDto.getTitle() != null) {
             newPost.setTitle(postDto.getTitle());
         }
-        if (postDto.getBody() != null && StringUtils.isNotBlank(postDto.getBody())) {
+        if (postDto.getBody() != null) {
             newPost.setBody(postDto.getBody());
+        }
+        if (postDto.getOwnerId() != null) {
+            newPost.setUser(userServiceUtil.getUserById(postDto.getOwnerId()));
+        }
+        if (postDto.getGroupId() != null) {
+            newPost.setGroup(groupService.getGroupById(postDto.getGroupId()));
         }
         if (postDto.getHidden() != null) {
             newPost.setHidden(postDto.getHidden());
@@ -115,6 +128,7 @@ public class PostServiceImpl implements PostService {
             postDto.getFileIds().forEach(postFileId -> files.add(fileService.getFileById(postFileId)));
             newPost.setFiles(files);
         }
+
         return newPost;
     }
 
@@ -138,5 +152,43 @@ public class PostServiceImpl implements PostService {
         }
 
         return predicate;
+    }
+
+    private void createHistoryEntry(PostEntity post) {
+        PostHistoryEntity history = new PostHistoryEntity();
+
+        if(post.getHidden() != null) {
+            history.setHidden(post.getHidden());
+        }
+
+        if (post.getTitle() != null) {
+            history.setTitle(post.getTitle());
+        }
+        if (post.getBody() != null) {
+            history.setBody(post.getBody());
+        }
+        if (post.getUser() != null && post.getUser().getId() != null) {
+            history.setOwnerId(post.getUser().getId());
+        }
+        if (post.getGroup() != null && post.getGroup().getId() != null) {
+            history.setGroupId(post.getGroup().getId());
+        }
+        if (post.getId() != null) {
+            history.setPostId(post.getId());
+        }
+        if (post.getCreatedBy() != null) {
+            history.setCreatedBy(post.getCreatedBy());
+        }
+        if (post.getLastModifiedBy() != null) {
+            history.setLastModifiedBy(post.getLastModifiedBy());
+        }
+        if (post.getCreatedDate() != null) {
+            history.setCreatedDate(post.getCreatedDate());
+        }
+        if (post.getLastModifiedDate() != null) {
+            history.setLastModifiedDate(post.getLastModifiedDate());
+        }
+
+        postHistoryRepository.save(history);
     }
 }

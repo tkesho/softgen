@@ -1,5 +1,6 @@
 package org.test.sotfgen.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -48,8 +49,19 @@ public class PostEntity extends Auditable {
     @Column(name = "hidden", nullable = false)
     private Boolean hidden = false;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "post_file",
+            schema = "content",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "file_id")
+    )
     private Set<FileEntity> files = new LinkedHashSet<>();
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<CommentEntity> comments = new LinkedHashSet<>();
+
 
     @PrePersist
     private void prePersist() {

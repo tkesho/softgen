@@ -30,7 +30,8 @@ public class PostController {
             @RequestParam(defaultValue = "10", required = false) @Max(100) Integer pageSize,
             @RequestParam(defaultValue = "ASC", required = false) Sort.Direction sortDirection,
             @RequestParam(defaultValue = "id", required = false) String sortBy,
-            PostSearchParams params) {
+            PostSearchParams params
+    ) {
         Sort sorter = Sort.by(sortDirection, sortBy);
         return ResponseEntity.ok(postService.getPosts(params, PageRequest.of(pageNumber, pageSize, sorter)));
     }

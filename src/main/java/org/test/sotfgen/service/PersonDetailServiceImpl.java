@@ -32,7 +32,7 @@ public class PersonDetailServiceImpl implements PersonDetailService {
 
     @Override
     public PersonDetailEntity getPerson(Integer id) {
-        return getPersonById(id);
+        return getPersonByUserId(id);
     }
 
     @Override
@@ -57,12 +57,12 @@ public class PersonDetailServiceImpl implements PersonDetailService {
     @Override
     @Transactional
     public void deletePerson(Integer id) {
-        PersonDetailEntity personToDelete = getPersonById(id);
+        PersonDetailEntity personToDelete = getPersonByUserId(id);
         personDetailRepository.delete(personToDelete);
     }
 
-    private PersonDetailEntity getPersonById(Integer id) {
-        return personDetailRepository.findByUserId(id).orElseThrow(() -> new PersonNotFoundException("person with id " + id + " not found"));
+    private PersonDetailEntity getPersonByUserId(Integer userId) {
+        return personDetailRepository.findByUserId(userId).orElseThrow(() -> new PersonNotFoundException("person with id " + userId + " not found"));
     }
 
     private void updatePersonFields(PersonDetailDto person, PersonDetailEntity personToUpdate) {

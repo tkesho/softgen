@@ -2,7 +2,7 @@ package org.test.sotfgen.utils;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.test.sotfgen.Exceptions.user.UserNotFoundException;
+import org.test.sotfgen.Exceptions.UserNotFoundException;
 import org.test.sotfgen.entity.UserEntity;
 import org.test.sotfgen.repository.UserRepository;
 

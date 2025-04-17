@@ -14,7 +14,7 @@ import org.test.sotfgen.config.SecUser;
 import org.test.sotfgen.dto.Password;
 import org.test.sotfgen.dto.UserDto;
 import org.test.sotfgen.entity.UserEntity;
-import org.test.sotfgen.service.UserService;
+import org.test.sotfgen.service.interfaces.UserService;
 
 @RestController
 @RequestMapping("/users")

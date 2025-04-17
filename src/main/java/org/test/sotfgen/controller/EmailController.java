@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.test.sotfgen.dto.EmailDto;
 import org.test.sotfgen.entity.EmailEntity;
-import org.test.sotfgen.service.EmailService;
+import org.test.sotfgen.service.interfaces.EmailService;
 
 @RestController
 @RequestMapping("/emails")
@@ -33,5 +33,4 @@ public class EmailController {
         Sort sort = Sort.by(sortDirection, sortField);
         return ResponseEntity.ok(emailService.getEmails(params, PageRequest.of(pageNumber, pageSize, sort)));
     }
-
 }

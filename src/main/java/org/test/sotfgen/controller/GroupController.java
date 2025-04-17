@@ -13,7 +13,7 @@ import org.test.sotfgen.config.SecUser;
 import org.test.sotfgen.dto.GroupDto;
 import org.test.sotfgen.dto.GroupSearchParams;
 import org.test.sotfgen.entity.GroupEntity;
-import org.test.sotfgen.service.GroupService;
+import org.test.sotfgen.service.interfaces.GroupService;
 
 @RestController
 @RequestMapping("/groups")

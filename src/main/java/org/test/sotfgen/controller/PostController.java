@@ -14,7 +14,7 @@ import org.test.sotfgen.config.SecUser;
 import org.test.sotfgen.dto.PostDto;
 import org.test.sotfgen.dto.PostSearchParams;
 import org.test.sotfgen.entity.PostEntity;
-import org.test.sotfgen.service.PostService;
+import org.test.sotfgen.service.interfaces.PostService;
 
 @RestController
 @RequestMapping("/posts")

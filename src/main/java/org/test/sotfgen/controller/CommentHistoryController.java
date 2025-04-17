@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.test.sotfgen.dto.CommentHistorySearchParams;
 import org.test.sotfgen.entity.CommentHistoryEntity;
-import org.test.sotfgen.service.CommentHistoryService;
+import org.test.sotfgen.service.interfaces.CommentHistoryService;
 
 @RestController
 @RequiredArgsConstructor

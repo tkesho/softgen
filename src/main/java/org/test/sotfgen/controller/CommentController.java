@@ -11,7 +11,7 @@ import org.test.sotfgen.config.SecUser;
 import org.test.sotfgen.dto.CommentDto;
 import org.test.sotfgen.dto.CommentSearchParams;
 import org.test.sotfgen.entity.CommentEntity;
-import org.test.sotfgen.service.CommentService;
+import org.test.sotfgen.service.interfaces.CommentService;
 
 @RestController
 @RequiredArgsConstructor

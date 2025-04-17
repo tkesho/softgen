@@ -14,7 +14,7 @@ import org.test.sotfgen.config.SecUser;
 import org.test.sotfgen.dto.PersonDetailDto;
 import org.test.sotfgen.dto.PersonDetailSearchParams;
 import org.test.sotfgen.entity.PersonDetailEntity;
-import org.test.sotfgen.service.PersonDetailService;
+import org.test.sotfgen.service.interfaces.PersonDetailService;
 
 @RestController
 @RequestMapping("/persons")

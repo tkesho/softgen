@@ -3,6 +3,7 @@ package org.test.sotfgen.config;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.S3Exception;
@@ -13,7 +14,8 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 public class MinioBucketInitializer {
 
     private final S3Client s3Client;
-    private static final String BUCKET_NAME = "files";
+    @Value("${minio.bucket.name}")
+    private String BUCKET_NAME;
 
     @PostConstruct
     public void init() {

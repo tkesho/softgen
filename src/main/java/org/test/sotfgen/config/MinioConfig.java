@@ -1,6 +1,7 @@
 package org.test.sotfgen.config;
 
 
+import io.minio.MinioClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,7 @@ public class MinioConfig {
     private String minioSecretKey;
 
     @Bean
-    public S3Client minioClient() {
+    public S3Client minioClientS3Client() {
         return S3Client.builder()
                 .endpointOverride(URI.create(minioUrl))
                 .credentialsProvider(StaticCredentialsProvider.create(
@@ -34,6 +35,14 @@ public class MinioConfig {
                 .serviceConfiguration(S3Configuration.builder()
                         .pathStyleAccessEnabled(true)
                         .build())
+                .build();
+    }
+
+    @Bean
+    public MinioClient minioClientMinioClient() {
+        return MinioClient.builder()
+                .endpoint(minioUrl)
+                .credentials(minioAccessKey, minioSecretKey)
                 .build();
     }
 }

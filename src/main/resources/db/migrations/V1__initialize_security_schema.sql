@@ -52,6 +52,16 @@ create table security.role_authority
     constraint role_id_authority_id_uk unique (role_id, authority_id)
 );
 
+create table security.user_authority
+(
+    id serial not null primary key,
+    user_id integer not null
+        constraint user_authority_user_fk references security.user (id),
+    authority_id integer not null
+        constraint user_authority_authority_fk references security.authority (id),
+
+    constraint user_id_authority_id_uk unique (user_id, authority_id)
+);
 
 -- INSERT VALUES INTO TABLES
 

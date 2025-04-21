@@ -9,9 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.test.sotfgen.Exceptions.CommentNotFoundException;
 import org.test.sotfgen.Exceptions.PersonNotFoundException;
 import org.test.sotfgen.Exceptions.UserDoesNotHasAuthority;
-import org.test.sotfgen.security.SecUser;
 import org.test.sotfgen.dto.CommentDto;
 import org.test.sotfgen.dto.CommentSearchParams;
 import org.test.sotfgen.entity.CommentEntity;
@@ -20,6 +20,7 @@ import org.test.sotfgen.mapper.CommentMapper;
 import org.test.sotfgen.repository.CommentHistoryRepository;
 import org.test.sotfgen.repository.CommentRepository;
 import org.test.sotfgen.repository.PersonDetailRepository;
+import org.test.sotfgen.security.SecUser;
 import org.test.sotfgen.service.interfaces.CommentService;
 import org.test.sotfgen.service.interfaces.PostService;
 
@@ -82,7 +83,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentEntity getCommentById(Integer commentId) {
-        return commentRepository.findById(commentId).get();//.orElseThrow(() -> new CommentNotFoundException("comment with id " + commentId + " not found"));
+        return commentRepository.findById(commentId).orElseThrow(() -> new CommentNotFoundException("comment with id " + commentId + " not found"));
     }
 
 

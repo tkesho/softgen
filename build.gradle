@@ -39,6 +39,8 @@ dependencies {
             'org.springframework.boot:spring-boot-starter-mail',
             'io.minio:minio:8.5.17',
             'io.jsonwebtoken:jjwt-api:0.12.6',
+            'org.springframework.boot:spring-boot-starter-data-redis',
+            'redis.clients:jedis:5.2.0'
     )
 
     compileOnly(

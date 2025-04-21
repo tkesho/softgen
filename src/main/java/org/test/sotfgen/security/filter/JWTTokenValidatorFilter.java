@@ -7,32 +7,40 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.core.env.Environment;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.test.sotfgen.constants.ApplicationConstants;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public class JWTTokenValidatorFilter extends OncePerRequestFilter {
+
+    private final String jwtSecretKey;
+    private final String jwtHeader;
+    private final RedisTemplate<String, String> redisTemplate;
+
+    public JWTTokenValidatorFilter(String jwtSecretKey, String jwtHeader, RedisTemplate<String, String> redisTemplate) {
+        this.jwtSecretKey = jwtSecretKey;
+        this.jwtHeader = jwtHeader;
+        this.redisTemplate = redisTemplate;
+    }
+
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal( HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain)
             throws ServletException, IOException
     {
-        String jwt = request.getHeader(ApplicationConstants.JWT_HEADER);
-        if(jwt != null) {
+        String jwt = request.getHeader(jwtHeader);
+        if(jwt != null && Objects.equals(redisTemplate.opsForValue().get(jwt), "valid")) {
             try {
-                Environment env = getEnvironment();
-                String secret = env.getProperty(
-                        ApplicationConstants.JWT_SECRET_KEY,
-                        ApplicationConstants.JWT_SECRET_DEFAULT_VALUE);
-                SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+                SecretKey secretKey = Keys.hmacShaKeyFor(jwtSecretKey.getBytes(StandardCharsets.UTF_8));
                 Claims claims = Jwts.parser().verifyWith(secretKey)
                         .build().parseSignedClaims(jwt).getPayload();
                 String username = String.valueOf(claims.get("username"));
@@ -43,12 +51,14 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
             } catch (Exception e) {
                 throw new BadCredentialsException("Invalid JWT token");
             }
+        }  else {
+            throw new BadCredentialsException("no token has been provided");
         }
         filterChain.doFilter(request, response);
     }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return request.getServletPath().equals("/users");
+        return request.getServletPath().equals("/login");
     }
 }

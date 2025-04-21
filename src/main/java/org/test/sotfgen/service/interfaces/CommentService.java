@@ -3,7 +3,7 @@ package org.test.sotfgen.service.interfaces;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.test.sotfgen.config.SecUser;
+import org.test.sotfgen.security.SecUser;
 import org.test.sotfgen.dto.CommentDto;
 import org.test.sotfgen.dto.CommentSearchParams;
 import org.test.sotfgen.entity.CommentEntity;

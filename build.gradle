@@ -37,7 +37,8 @@ dependencies {
             'org.flywaydb:flyway-database-postgresql',
             'org.springframework.boot:spring-boot-starter-validation',
             'org.springframework.boot:spring-boot-starter-mail',
-            'io.minio:minio:8.5.17'
+            'io.minio:minio:8.5.17',
+            'io.jsonwebtoken:jjwt-api:0.12.6',
     )
 
     compileOnly(
@@ -50,7 +51,9 @@ dependencies {
     )
 
     runtimeOnly(
-            'org.postgresql:postgresql'
+            'org.postgresql:postgresql',
+            'io.jsonwebtoken:jjwt-impl:0.12.6',
+            'io.jsonwebtoken:jjwt-jackson:0.12.6',
     )
 
     annotationProcessor(

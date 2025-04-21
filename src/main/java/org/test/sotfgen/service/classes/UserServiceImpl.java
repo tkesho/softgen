@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.test.sotfgen.Exceptions.IncorrectPasswordException;
-import org.test.sotfgen.config.SecUser;
+import org.test.sotfgen.security.SecUser;
 import org.test.sotfgen.dto.Password;
 import org.test.sotfgen.dto.UserDto;
 import org.test.sotfgen.entity.UserEntity;

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.test.sotfgen.Exceptions.GroupNotFoundException;
 import org.test.sotfgen.Exceptions.MemberAndGroupRelationException;
 import org.test.sotfgen.Exceptions.UserDoesNotHasAuthority;
-import org.test.sotfgen.config.SecUser;
+import org.test.sotfgen.security.SecUser;
 import org.test.sotfgen.dto.GroupDto;
 import org.test.sotfgen.dto.GroupSearchParams;
 import org.test.sotfgen.entity.GroupEntity;

@@ -3,13 +3,13 @@ package org.test.sotfgen.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.test.sotfgen.model.base.Auditable;
+import org.test.sotfgen.audit.BaseAuditTable;
 
 @Setter
 @Getter
 @Entity
 @Table(name = "employee", schema = "social")
-public class EmployeeEntity extends Auditable {
+public class EmployeeEntity extends BaseAuditTable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

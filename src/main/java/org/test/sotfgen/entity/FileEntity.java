@@ -5,13 +5,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.test.sotfgen.model.base.Auditable;
+import org.test.sotfgen.audit.BaseAuditTable;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "file", schema = "content")
-public class FileEntity extends Auditable {
+public class FileEntity extends BaseAuditTable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

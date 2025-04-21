@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.test.sotfgen.model.base.Auditable;
+import org.test.sotfgen.audit.BaseAuditTable;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -13,7 +13,7 @@ import java.util.Set;
 @Setter
 @Getter
 @Table(name = "comment", schema = "content")
-public class CommentEntity extends Auditable {
+public class CommentEntity extends BaseAuditTable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

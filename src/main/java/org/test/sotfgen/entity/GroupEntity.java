@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.ColumnTransformer;
-import org.test.sotfgen.model.base.Auditable;
+import org.test.sotfgen.audit.BaseAuditTable;
 
 import java.util.Set;
 
@@ -17,7 +17,7 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @Table(name = "group", schema = "social")
-public class GroupEntity extends Auditable {
+public class GroupEntity extends BaseAuditTable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

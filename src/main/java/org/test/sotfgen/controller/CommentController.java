@@ -7,7 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.test.sotfgen.config.SecUser;
+import org.test.sotfgen.security.SecUser;
 import org.test.sotfgen.dto.CommentDto;
 import org.test.sotfgen.dto.CommentSearchParams;
 import org.test.sotfgen.entity.CommentEntity;

@@ -1,4 +1,4 @@
-package org.test.sotfgen.config;
+package org.test.sotfgen.security;
 
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

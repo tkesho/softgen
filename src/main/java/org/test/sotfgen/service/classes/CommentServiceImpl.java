@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.test.sotfgen.Exceptions.PersonNotFoundException;
 import org.test.sotfgen.Exceptions.UserDoesNotHasAuthority;
-import org.test.sotfgen.config.SecUser;
+import org.test.sotfgen.security.SecUser;
 import org.test.sotfgen.dto.CommentDto;
 import org.test.sotfgen.dto.CommentSearchParams;
 import org.test.sotfgen.entity.CommentEntity;

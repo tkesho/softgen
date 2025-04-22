@@ -16,12 +16,8 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
 import org.test.sotfgen.security.filter.AuthoritiesLoggingAfterFilter;
 import org.test.sotfgen.security.filter.JWTTokenValidatorFilter;
-
-import java.util.Collections;
-import java.util.List;
 
 @Configuration
 @Profile("!prod")
@@ -65,25 +61,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception{
         http.sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .cors(corsConfig -> corsConfig.configurationSource(request -> {
-                    CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(Collections.singletonList("http://localhost:8080"));
-                    config.setAllowedMethods(Collections.singletonList("*"));
-                    config.setAllowCredentials(true);
-                    config.setAllowedHeaders(Collections.singletonList("*"));
-                    config.setExposedHeaders(List.of("Authorization"));
-                    config.setMaxAge(3600L);
-                    return config;
-                }))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
-                .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure()) // HTTP request
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterAfter(authoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(jwtTokenValidatorFilter(redisTemplate), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/swagger-ui/**").permitAll()
+                        .requestMatchers("/login", "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();

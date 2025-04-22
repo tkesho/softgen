@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.test.sotfgen.Exceptions.EmailNotFoundException;
+import org.test.sotfgen.exceptions.EmailNotFoundException;
 import org.test.sotfgen.dto.EmailDto;
 import org.test.sotfgen.entity.EmailEntity;
 import org.test.sotfgen.repository.EmailRepository;

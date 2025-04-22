@@ -4,13 +4,10 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.test.sotfgen.entity.AuthorityEntity;
 import org.test.sotfgen.entity.UserEntity;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class SecUser implements UserDetails {
 
@@ -19,19 +16,17 @@ public class SecUser implements UserDetails {
         this.username = user.getUsername();
         this.password = user.getPassword();
         this.enabled = user.getActive();
-        this.authorities = user.getRoles().stream()
-                .flatMap(role -> {
-                    List<SimpleGrantedAuthority> combined = new ArrayList<>();
-
-                    combined.add(new SimpleGrantedAuthority(role.getName()));
-
-                    for (AuthorityEntity authority : role.getAuthorities()) {
-                        combined.add(new SimpleGrantedAuthority(authority.getName()));
-                    }
-
-                    return combined.stream();
-                })
-                .collect(Collectors.toList());
+        this.authorities = new ArrayList<>();
+        if (user.getRoles() != null) {
+            this.authorities.addAll(user.getRoles().stream()
+                    .map(role -> new SimpleGrantedAuthority(role.getName()))
+                    .toList());
+        }
+        if (user.getAuthorities() != null) {
+            this.authorities.addAll(user.getAuthorities().stream()
+                    .map(authority -> new SimpleGrantedAuthority(authority.getName()))
+                    .toList());
+        }
     }
 
     @Getter

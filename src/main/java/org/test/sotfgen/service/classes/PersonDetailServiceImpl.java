@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.test.sotfgen.Exceptions.PersonNotFoundException;
+import org.test.sotfgen.exceptions.PersonNotFoundException;
 import org.test.sotfgen.security.SecUser;
 import org.test.sotfgen.dto.PersonDetailDto;
 import org.test.sotfgen.dto.PersonDetailSearchParams;
@@ -16,14 +16,14 @@ import org.test.sotfgen.entity.UserEntity;
 import org.test.sotfgen.mapper.PersonDetailMapper;
 import org.test.sotfgen.repository.PersonDetailRepository;
 import org.test.sotfgen.service.interfaces.PersonDetailService;
-import org.test.sotfgen.utils.UserServiceUtil;
+import org.test.sotfgen.utils.UserUtil;
 
 @Service
 @RequiredArgsConstructor
 public class PersonDetailServiceImpl implements PersonDetailService {
 
     private final PersonDetailRepository personDetailRepository;
-    private final UserServiceUtil userServiceUtil;
+    private final UserUtil userUtil;
     private final PersonDetailMapper personDetailMapper;
 
     @Override
@@ -40,7 +40,7 @@ public class PersonDetailServiceImpl implements PersonDetailService {
     @Transactional
     public PersonDetailEntity createPerson(PersonDetailDto personDto, Integer userId) {
         PersonDetailEntity personToCreate = personDetailMapper.personDetailDtoToPersonDetail(personDto);
-        UserEntity userToAttach = userServiceUtil.getUserById(userId);
+        UserEntity userToAttach = userUtil.getUserById(userId);
         personToCreate.setUser(userToAttach);
         return personDetailRepository.save(personToCreate);
     }

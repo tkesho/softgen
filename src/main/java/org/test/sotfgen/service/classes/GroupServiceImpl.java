@@ -12,9 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.test.sotfgen.Exceptions.GroupNotFoundException;
-import org.test.sotfgen.Exceptions.MemberAndGroupRelationException;
-import org.test.sotfgen.Exceptions.UserDoesNotHasAuthority;
+import org.test.sotfgen.exceptions.GroupNotFoundException;
+import org.test.sotfgen.exceptions.MemberAndGroupRelationException;
+import org.test.sotfgen.exceptions.UserDoesNotHasAuthority;
 import org.test.sotfgen.security.SecUser;
 import org.test.sotfgen.dto.GroupDto;
 import org.test.sotfgen.dto.GroupSearchParams;
@@ -24,7 +24,7 @@ import org.test.sotfgen.mapper.GroupMapper;
 import org.test.sotfgen.repository.GroupRepository;
 import org.test.sotfgen.service.interfaces.GroupService;
 import org.test.sotfgen.service.interfaces.UserService;
-import org.test.sotfgen.utils.UserServiceUtil;
+import org.test.sotfgen.utils.UserUtil;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class GroupServiceImpl implements GroupService {
 
     private final GroupRepository groupRepository;
     private final UserService userService;
-    private final UserServiceUtil userServiceUtil;
+    private final UserUtil userUtil;
     private final GroupMapper groupMapper;
 
     @Override
@@ -46,7 +46,7 @@ public class GroupServiceImpl implements GroupService {
         SecUser user = (SecUser) authentication.getPrincipal();
 
 
-        if (userServiceUtil.userHasAuthority(user.getId(), "GROUP_READ_PRIVATE")) {
+        if (userUtil.userHasAuthority(user.getId(), "GROUP_READ_PRIVATE")) {
             return page;
         }
 
@@ -65,7 +65,7 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public GroupEntity createGroup(SecUser secUser, GroupDto groupDto) {
         GroupEntity groupToCreate = groupMapper.groupDtoToGroupEntity(groupDto);
-        UserEntity user = userServiceUtil.getUserById(secUser.getId());
+        UserEntity user = userUtil.getUserById(secUser.getId());
         groupToCreate.setOwner(user);
         groupToCreate.setActive(true);
         groupToCreate.setPrivacy(GroupEntity.Privacy.PUBLIC);
@@ -89,7 +89,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional
     public void insertUserToGroup(Integer userId, Integer groupId) {
-        UserEntity member = userServiceUtil.getUserById(userId);
+        UserEntity member = userUtil.getUserById(userId);
         GroupEntity group = getGroupById(groupId);
 
         if (group.getMembers().contains(member)) {
@@ -104,7 +104,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public void deleteUserFromGroup(Integer userId, Integer groupId) {
-        UserEntity member = userServiceUtil.getUserById(userId);
+        UserEntity member = userUtil.getUserById(userId);
         GroupEntity group = getGroupById(groupId);
 
         if (!group.getMembers().contains(member)) {
@@ -122,9 +122,9 @@ public class GroupServiceImpl implements GroupService {
         boolean flag = false;
 
         if (groupDto.getOwnerId() != null) {
-            newOwner = userServiceUtil.getUserById(groupDto.getOwnerId());
+            newOwner = userUtil.getUserById(groupDto.getOwnerId());
             flag = true;
-            if (!userServiceUtil.userHasAuthority(groupDto.getOwnerId(), "GROUP_CREATE")) {
+            if (!userUtil.userHasAuthority(groupDto.getOwnerId(), "GROUP_CREATE")) {
                 throw new UserDoesNotHasAuthority("user with id " + newOwner.getId() + " does not have GROUP_CREATE permission to own groups");
             }
         }

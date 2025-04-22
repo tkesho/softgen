@@ -24,6 +24,12 @@ create table security.role
     name varchar(32) not null
 );
 
+create table security.authority
+(
+    id        serial      not null primary key,
+    name varchar(64) not null
+);
+
 create table security.user_role
 (
     id      serial  not null primary key,
@@ -35,22 +41,6 @@ create table security.user_role
     constraint user_id_role_id_uk unique (user_id, role_id)
 );
 
-create table security.authority
-(
-    id        serial      not null primary key,
-    name varchar(64) not null
-);
-
-create table security.role_authority
-(
-    id           serial  not null primary key,
-    role_id      integer not null
-        constraint authority_roles_roles references security.role (id),
-    authority_id integer not null
-        constraint authority_roles_authorities references security.authority (id),
-
-    constraint role_id_authority_id_uk unique (role_id, authority_id)
-);
 
 create table security.user_authority
 (
@@ -66,12 +56,14 @@ create table security.user_authority
 -- INSERT VALUES INTO TABLES
 
 insert into security.user (email, username, password, created_by, last_modified_by)
-values ('admin@softgen.ge', 'admin', '$2a$10$./iK4EZY/vuUT4mT.ZqwuuxTWsv2/KCxPM8Ipi9WU3F5narCaIlGW', 'admin',
+values ('admin@softgen.ge', 'admin', '{bcrypt}$2a$10$./iK4EZY/vuUT4mT.ZqwuuxTWsv2/KCxPM8Ipi9WU3F5narCaIlGW', 'admin',
         'admin');
 
 insert into security.role (name)
 values ('ROLE_ADMIN'),
-       ('ROLE_TEAM_LEADER');
+       ('ROLE_TEAM_LEADER'),
+       ('ROLE_EMPLOYEE');
+
 
 insert into security.authority (name)
 values ('USER_READ'),
@@ -90,13 +82,26 @@ values ('USER_READ'),
        ('POST_READ'),
        ('POST_CREATE'),
        ('POST_UPDATE'),
-       ('POST_DELETE');
+       ('POST_DELETE'),
+       ('EMAIL_READ'),
+       ('EMAIL_CREATE'),
+       ('EMAIL_UPDATE'),
+       ('EMAIL_DELETE'),
+       ('COMMENT_READ'),
+       ('COMMENT_CREATE'),
+       ('COMMENT_UPDATE'),
+       ('COMMENT_DELETE'),
+       ('EMPLOYEE_READ'),
+       ('EMPLOYEE_CREATE'),
+       ('EMPLOYEE_UPDATE'),
+       ('EMPLOYEE_DELETE');
 ;
 
-insert into security.role_authority (role_id, authority_id)
-select 1, a.id
-from security.authority a;
+insert into security.user_authority (user_id, authority_id)
+select 1, id
+from security.authority;
+
 
 insert into security.user_role (user_id, role_id)
-select 1, a.id
-from security.role a;
+select 1, id
+from security.role;

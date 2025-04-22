@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.test.sotfgen.security.filter.AuthoritiesLoggingAfterFilter;
 import org.test.sotfgen.security.filter.JWTTokenValidatorFilter;
 
 import java.util.Collections;
@@ -56,11 +55,6 @@ public class SecurityConfigProd {
         return new JWTTokenValidatorFilter(jwtSecretKey, jwtHeader, redis);
     }
 
-    @Bean
-    //Filter
-    public AuthoritiesLoggingAfterFilter authoritiesLoggingAfterFilter() {
-        return new AuthoritiesLoggingAfterFilter();
-    }
 
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception{
@@ -80,7 +74,6 @@ public class SecurityConfigProd {
                 .logout(AbstractHttpConfigurer::disable)
                 .requiresChannel(rcc -> rcc.anyRequest().requiresSecure()) // HTTPS request
                 .csrf(AbstractHttpConfigurer::disable)
-                .addFilterAfter(authoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(jwtTokenValidatorFilter(redisTemplate), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()

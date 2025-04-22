@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.test.sotfgen.Exceptions.PostNotFoundException;
-import org.test.sotfgen.Exceptions.UserDoesNotHasAuthority;
+import org.test.sotfgen.exceptions.PostNotFoundException;
+import org.test.sotfgen.exceptions.UserDoesNotHasAuthority;
 import org.test.sotfgen.security.SecUser;
 import org.test.sotfgen.dto.PostDto;
 import org.test.sotfgen.dto.PostSearchParams;
@@ -22,7 +22,7 @@ import org.test.sotfgen.repository.PostRepository;
 import org.test.sotfgen.service.interfaces.FileService;
 import org.test.sotfgen.service.interfaces.GroupService;
 import org.test.sotfgen.service.interfaces.PostService;
-import org.test.sotfgen.utils.UserServiceUtil;
+import org.test.sotfgen.utils.UserUtil;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -32,7 +32,7 @@ import java.util.Set;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final UserServiceUtil userServiceUtil;
+    private final UserUtil userUtil;
     private final GroupService groupService;
     private final FileService fileService;
     private final PostMapper postMapper;
@@ -51,7 +51,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public PostEntity createPost(SecUser secUser, Integer groupId, PostDto postDto) {
-        UserEntity author = userServiceUtil.getUserById(secUser.getId());
+        UserEntity author = userUtil.getUserById(secUser.getId());
         GroupEntity group = groupService.getGroupById(groupId);
 
             PostEntity postToCreate = postMapper.postDtoToPostEntity(postDto);
@@ -95,13 +95,13 @@ public class PostServiceImpl implements PostService {
 
     private PostEntity updatePostFields(PostDto postDto, Integer postId) {
         if(postDto.getOwnerId() != null && !postDto.getOwnerId().equals(getPostById(postId).getUser().getId())) {
-            if(!userServiceUtil.userHasAuthority(postDto.getOwnerId(), "POST_CREATE")) {
+            if(!userUtil.userHasAuthority(postDto.getOwnerId(), "POST_CREATE")) {
                 throw new UserDoesNotHasAuthority("user with id " + postDto.getOwnerId() + " does not have POST_CREATE permission to own posts");
             }
         }
 
         if (postDto.getGroupId() != null && !postDto.getGroupId().equals(getPostById(postId).getGroup().getId())) {
-            if(!userServiceUtil.userHasRole(postDto.getGroupId(), "ROLE_ADMIN")) {
+            if(!userUtil.userHasRole(postDto.getGroupId(), "ROLE_ADMIN")) {
                 throw new UserDoesNotHasAuthority("user with id " + postDto.getOwnerId() + " does not have ADMIN role to change location of the post");
             }
             if(postDto.getGroupId() != null) {
@@ -118,7 +118,7 @@ public class PostServiceImpl implements PostService {
             newPost.setBody(postDto.getBody());
         }
         if (postDto.getOwnerId() != null) {
-            newPost.setUser(userServiceUtil.getUserById(postDto.getOwnerId()));
+            newPost.setUser(userUtil.getUserById(postDto.getOwnerId()));
         }
         if (postDto.getGroupId() != null) {
             newPost.setGroup(groupService.getGroupById(postDto.getGroupId()));

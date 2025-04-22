@@ -35,9 +35,10 @@ public class UserEntity extends BaseAuditTable {
 
     @ColumnDefault("true")
     @Column(name = "active", nullable = false)
-    private Boolean active = true;
+    private Boolean active;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @JsonBackReference
+    @ManyToMany()
     @JoinTable(
             name = "user_role", schema = "security",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -46,6 +47,23 @@ public class UserEntity extends BaseAuditTable {
     private Set<RoleEntity> roles;
 
     @JsonBackReference
+    @ManyToMany()
+    @JoinTable(
+            name = "user_authority", schema = "security",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "authority_id")
+    )
+    private Set<AuthorityEntity> authorities;
+
+
+    @JsonBackReference
     @ManyToMany(mappedBy = "members", fetch =  FetchType.EAGER)
     private Set<GroupEntity> groups;
+
+    @PrePersist
+    private void prePersist() {
+        if (this.active == null) {
+            this.active = true;
+        }
+    }
 }

@@ -5,5 +5,5 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/postHistory")
-public class PostHistoryComment {
+public class PostHistoryController {
 }

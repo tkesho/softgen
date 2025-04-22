@@ -1,6 +1,5 @@
 package org.test.sotfgen.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,10 +30,8 @@ public class AuthenticationController {
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
-        String jwtToken = request.getHeader(jwtHeader);
-
-        tokenService.logout(jwtToken);
+    public ResponseEntity<String> logout() {
+        tokenService.logout();
         return ResponseEntity.ok("Logout successful");
     }
 }

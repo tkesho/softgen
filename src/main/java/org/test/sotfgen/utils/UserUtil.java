@@ -1,14 +1,16 @@
 package org.test.sotfgen.utils;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.test.sotfgen.Exceptions.UserNotFoundException;
+import org.test.sotfgen.exceptions.UserNotFoundException;
 import org.test.sotfgen.entity.UserEntity;
 import org.test.sotfgen.repository.UserRepository;
 
 @Component
 @RequiredArgsConstructor
-public class UserServiceUtil {
+public class UserUtil {
 
     private final UserRepository userRepository;
 
@@ -16,11 +18,16 @@ public class UserServiceUtil {
         return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(("user with id " + userId + " not found")));
     }
 
+    public UserEntity getActingPrincipal() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException(("user with username " + username + " not found")));
+    }
+
     public boolean userHasAuthority(Integer userId, String permission) {
         UserEntity user = getUserById(userId);
-        return user.getRoles().stream()
-                .flatMap(role -> role.getAuthorities().stream())
-                .anyMatch(a -> a.getName().equals(permission));
+        return user.getRoles().stream().anyMatch(r -> r.getName().equals(permission)) ||
+                user.getAuthorities().stream().anyMatch(a -> a.getName().equals(permission));
     }
 
     public boolean userHasRole(Integer userId, String role) {

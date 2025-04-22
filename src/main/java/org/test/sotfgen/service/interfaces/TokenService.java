@@ -7,7 +7,7 @@ import org.test.sotfgen.dto.AuthRequestDto;
 public interface TokenService {
     String authenticateAndGenerateToken(AuthRequestDto authRequestDto);
 
-    void logout(String token);
+    void logout();
 
     String refreshToken(String token);
 }

@@ -1,5 +1,6 @@
 package org.test.sotfgen.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Max;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -7,10 +8,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.test.sotfgen.security.SecUser;
+import org.test.sotfgen.dto.ChangePasswordDto;
 import org.test.sotfgen.dto.Password;
 import org.test.sotfgen.dto.UserDto;
 import org.test.sotfgen.entity.UserEntity;
@@ -55,40 +55,38 @@ public class UserController {
 
     @PutMapping("/resetPassword")
     public ResponseEntity<Void> resetPass(
-            @AuthenticationPrincipal SecUser secUser
+            HttpServletRequest request
     ) {
-        userService.resetPass(secUser);
+        userService.resetPass();
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/changePassword")
     public ResponseEntity<Void> changePass(
-            @AuthenticationPrincipal SecUser secUser,
-            @RequestParam String oldPassword,
-            @RequestBody Password newPassword
+            HttpServletRequest request,
+            @RequestBody ChangePasswordDto changePasswordDto
     ) {
-        userService.changePass(secUser, oldPassword, newPassword);
-        return ResponseEntity.noContent().build();
+        userService.changePass(changePasswordDto, request.getHeader("Authorization"));
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/resetPassword/{username}")
     public ResponseEntity<Void> resetPassAdmin(
-            @AuthenticationPrincipal SecUser secUser,
-            String username
+            @PathVariable String username
+
     ) {
-        userService.resetPassAdmin(secUser, username);
+        userService.resetPassAdmin(username);
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasAuthority('USER_UPDATE')")
     @PutMapping("/{userId}")
     public ResponseEntity<UserEntity> updateUser(
-            @AuthenticationPrincipal SecUser secUser,
             @PathVariable Integer userId,
             @RequestBody UserDto userDto
     ) {
-        UserEntity updatedUser = userService.updateEMail(secUser, userDto, userId);
+        UserEntity updatedUser = userService.updateEMail(userDto, userId);
         return ResponseEntity.accepted().body(updatedUser);
     }
 
@@ -102,10 +100,9 @@ public class UserController {
 
     @DeleteMapping("/deactivate")
     public ResponseEntity<Void> deactivateUser(
-            @AuthenticationPrincipal SecUser secUser,
             @RequestBody Password password
     ) {
-        userService.deactivateUser(secUser, password);
+        userService.deactivateUser(password);
         return ResponseEntity.noContent().build();
     }
 }

@@ -8,15 +8,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.test.sotfgen.Exceptions.IncorrectPasswordException;
-import org.test.sotfgen.security.SecUser;
+import org.test.sotfgen.exceptions.IncorrectPasswordException;
+import org.test.sotfgen.dto.ChangePasswordDto;
 import org.test.sotfgen.dto.Password;
 import org.test.sotfgen.dto.UserDto;
 import org.test.sotfgen.entity.UserEntity;
 import org.test.sotfgen.mapper.UserMapper;
 import org.test.sotfgen.repository.UserRepository;
 import org.test.sotfgen.service.interfaces.UserService;
-import org.test.sotfgen.utils.UserServiceUtil;
+import org.test.sotfgen.utils.TokenUtil;
+import org.test.sotfgen.utils.UserUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -25,9 +26,10 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final UserServiceUtil userServiceUtil;
+    private final UserUtil userUtil;
     private final PasswordEncoder passwordEncoder;
     private final EmailSenderService emailSenderService;
+    private final TokenUtil tokenUtil;
 
     @Override
     public Page<UserEntity> getUsers(Pageable pageable) {
@@ -36,7 +38,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity getUser(Integer id) {
-        return userRepository.save(userServiceUtil.getUserById(id));
+        return userRepository.save(userUtil.getUserById(id));
     }
 
     @Override
@@ -49,8 +51,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserEntity updateEMail(SecUser secUser, UserDto user, Integer id) {
-        UserEntity userToUpdate = userServiceUtil.getUserById(id);
+    public UserEntity updateEMail(UserDto user, Integer id) {
+        UserEntity secUser = userUtil.getActingPrincipal();
+        UserEntity userToUpdate = userUtil.getUserById(id);
         if (user.getPassword() != null) {
             userToUpdate.setEmail(user.getEmail());
         }
@@ -60,55 +63,76 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(Integer id) {
-        UserEntity userToDelete = userServiceUtil.getUserById(id);
+        UserEntity userToDelete = userUtil.getUserById(id);
         userToDelete.setActive(false);
         userRepository.save(userToDelete);
     }
 
     @Override
     @Transactional
-    public void deactivateUser(SecUser secUser, Password password) {
-        if(!passwordEncoder.matches(password.getPassword(), secUser.getPassword())) {
+    public void deactivateUser(Password password) {
+        UserEntity user = userUtil.getActingPrincipal();
+
+        if (!passwordEncoder.matches(password.getPassword(), user.getPassword())) {
             throw new IncorrectPasswordException("Password not correct");
         }
-        UserEntity userToDeactivate = userServiceUtil.getUserById(secUser.getId());
+
+        UserEntity userToDeactivate = userUtil.getUserById(user.getId());
         userToDeactivate.setActive(false);
+
         String message = String.format("Hello %s, Your account has been deactivated!", userToDeactivate.getUsername());
         emailSenderService.sendEmail(userToDeactivate.getEmail(), "Account deactivation", message);
+
+        tokenUtil.deactivateToken(userToDeactivate.getUsername());
         userRepository.save(userToDeactivate);
     }
 
-    @Override
     @Transactional
-    public void resetPass(SecUser secUser) {
-        UserEntity user = userServiceUtil.getUserById(secUser.getId());
-        String newPassword = userServiceUtil.generateRandomPassword(12);
+    public void resetPass() {
+        UserEntity user = userUtil.getActingPrincipal();
+
+        String newPassword = userUtil.generateRandomPassword(12);
         user.setPassword(passwordEncoder.encode(newPassword));
+
+        tokenUtil.deactivateToken(user.getUsername());
         userRepository.save(user);
+
         String message = String.format("Hello %s, Your new password has been set to: %s !", user.getUsername(), newPassword);
         emailSenderService.sendEmail(user.getEmail(), "Password reset", message);
     }
 
     @Override
-    public void resetPassAdmin(SecUser secUser, String username) {
+    public void resetPassAdmin(String username) {
+        UserEntity secUser = userUtil.getActingPrincipal();
         UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
-        String newPassword = userServiceUtil.generateRandomPassword(12);
+
+        String newPassword = userUtil.generateRandomPassword(12);
         user.setPassword(passwordEncoder.encode(newPassword));
-        String message = String.format("Hello %s, user with name %s has reseted you password. New password is: %s !", username, userServiceUtil.getUserById(secUser.getId()).getUsername(), newPassword);
+
+        String message = String.format("Hello %s, user with name %s has reset you password. New password is: %s !", username, userUtil.getUserById(secUser.getId()).getUsername(), newPassword);
         emailSenderService.sendEmail(user.getEmail(), "Password reset by admin user", message);
+
+        tokenUtil.deactivateToken(user.getUsername());
         userRepository.save(user);
     }
 
     @Override
     @Transactional
-    public void changePass(SecUser secUser, String oldPassword, Password newPassword) {
-        if (!passwordEncoder.matches(oldPassword, secUser.getPassword())) {
+    public void changePass(ChangePasswordDto changePasswordDto, String jwtToken) {
+
+        UserEntity secUser = userUtil.getActingPrincipal();
+
+        if (!passwordEncoder.matches(changePasswordDto.oldPassword(), secUser.getPassword())) {
             throw new IncorrectPasswordException("Old password is incorrect");
         }
-        UserEntity user = userServiceUtil.getUserById(secUser.getId());
-        user.setPassword(passwordEncoder.encode(newPassword.getPassword()));
+
+        UserEntity user = userUtil.getUserById(secUser.getId());
+        user.setPassword(passwordEncoder.encode(changePasswordDto.newPassword()));
+
         String message = String.format("Hello %s, Your password has been changed!", user.getUsername());
         emailSenderService.sendEmail(user.getEmail(), "Password change", message);
+
+        tokenUtil.deactivateToken(secUser.getUsername());
         userRepository.save(user);
     }
 }

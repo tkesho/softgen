@@ -1,11 +1,11 @@
-package org.test.sotfgen.Exceptions;
+package org.test.sotfgen.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class PostNotFoundException extends RuntimeException {
-    public PostNotFoundException(String message) {
+public class PersonNotFoundException extends RuntimeException {
+    public PersonNotFoundException(String message) {
         super(message);
     }
 }

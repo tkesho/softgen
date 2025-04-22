@@ -1,4 +1,4 @@
-package org.test.sotfgen.model.base;
+package org.test.sotfgen.config;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @EntityListeners(org.springframework.data.jpa.domain.support.AuditingEntityListener.class)
 @Setter
 @Getter
-public abstract class Auditable {
+public abstract class BaseAuditTable {
 
     @CreatedBy
     @Column(name = "created_by", updatable = false)

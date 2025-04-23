@@ -15,7 +15,7 @@ import org.test.sotfgen.exceptions.UserDoesNotHasAuthority;
 import org.test.sotfgen.dto.CommentDto;
 import org.test.sotfgen.dto.CommentSearchParams;
 import org.test.sotfgen.entity.CommentEntity;
-import org.test.sotfgen.entity.CommentHistoryEntity;
+import org.test.sotfgen.audit.CommentHistoryEntity;
 import org.test.sotfgen.mapper.CommentMapper;
 import org.test.sotfgen.repository.CommentHistoryRepository;
 import org.test.sotfgen.repository.CommentRepository;

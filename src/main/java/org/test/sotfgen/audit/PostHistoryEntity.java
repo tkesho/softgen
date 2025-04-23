@@ -1,4 +1,4 @@
-package org.test.sotfgen.entity;
+package org.test.sotfgen.audit;
 
 import jakarta.persistence.*;
 import lombok.Getter;

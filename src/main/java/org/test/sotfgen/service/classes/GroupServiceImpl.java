@@ -9,17 +9,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.test.sotfgen.exceptions.GroupNotFoundException;
-import org.test.sotfgen.exceptions.MemberAndGroupRelationException;
-import org.test.sotfgen.exceptions.UserDoesNotHasAuthority;
-import org.test.sotfgen.security.SecUser;
 import org.test.sotfgen.dto.GroupDto;
 import org.test.sotfgen.dto.GroupSearchParams;
 import org.test.sotfgen.entity.GroupEntity;
 import org.test.sotfgen.entity.UserEntity;
+import org.test.sotfgen.exceptions.GroupNotFoundException;
+import org.test.sotfgen.exceptions.MemberAndGroupRelationException;
+import org.test.sotfgen.exceptions.UserDoesNotHasAuthority;
 import org.test.sotfgen.mapper.GroupMapper;
 import org.test.sotfgen.repository.GroupRepository;
 import org.test.sotfgen.service.interfaces.GroupService;
@@ -42,8 +39,7 @@ public class GroupServiceImpl implements GroupService {
 
         Page<GroupEntity> page = groupRepository.findAll((root, criteriaQuery, cb) -> getPredicate(params, root, cb), pageable);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        SecUser user = (SecUser) authentication.getPrincipal();
+        UserEntity user = userUtil.getActingPrincipal();
 
 
         if (userUtil.userHasAuthority(user.getId(), "GROUP_READ_PRIVATE")) {
@@ -63,7 +59,8 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional
-    public GroupEntity createGroup(SecUser secUser, GroupDto groupDto) {
+    public GroupEntity createGroup(GroupDto groupDto) {
+        UserEntity secUser = userUtil.getActingPrincipal();
         GroupEntity groupToCreate = groupMapper.groupDtoToGroupEntity(groupDto);
         UserEntity user = userUtil.getUserById(secUser.getId());
         groupToCreate.setOwner(user);
@@ -74,7 +71,8 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional
-    public GroupEntity updateGroup(SecUser secUser, GroupDto group, Integer groupId) {
+    public GroupEntity updateGroup(GroupDto group, Integer groupId) {
+        UserEntity secUser = userUtil.getActingPrincipal();
         return groupRepository.save(updateGroupFields(group, groupId));
     }
 

@@ -7,10 +7,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.test.sotfgen.security.SecUser;
 import org.test.sotfgen.dto.PostDto;
 import org.test.sotfgen.dto.PostSearchParams;
 import org.test.sotfgen.entity.PostEntity;
@@ -45,10 +43,9 @@ public class PostController {
     @PreAuthorize("hasAuthority('POST_CREATE')")
     @PostMapping("/{groupId}")
     public ResponseEntity<PostEntity> createPost(
-            @AuthenticationPrincipal SecUser secUser,
             @PathVariable Integer groupId,
             @RequestBody PostDto post) {
-        PostEntity createdPost = postService.createPost(secUser, groupId, post);
+        PostEntity createdPost = postService.createPost(groupId, post);
         var location = UriComponentsBuilder.fromPath("/posts/{id}").buildAndExpand(createdPost.getId());
         return ResponseEntity.created(location.toUri()).body(createdPost);
     }
@@ -56,10 +53,9 @@ public class PostController {
     @PreAuthorize("hasAuthority('POST_UPDATE')")
     @PutMapping({"/{postId}"})
     public ResponseEntity<PostEntity> updatePost(
-            @AuthenticationPrincipal SecUser secUser,
             @PathVariable Integer postId,
             @RequestBody PostDto post) {
-        PostEntity updatedPost = postService.updatePost(secUser, post, postId);
+        PostEntity updatedPost = postService.updatePost(post, postId);
         return ResponseEntity.accepted().body(updatedPost);
     }
 

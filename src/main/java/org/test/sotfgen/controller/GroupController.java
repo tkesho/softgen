@@ -6,10 +6,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.test.sotfgen.security.SecUser;
 import org.test.sotfgen.dto.GroupDto;
 import org.test.sotfgen.dto.GroupSearchParams;
 import org.test.sotfgen.entity.GroupEntity;
@@ -36,14 +34,18 @@ public class GroupController {
 
     @PreAuthorize("hasAuthority('GROUP_READ_PUBLIC') or hasAuthority('GROUP_READ_PRIVATE')")
     @GetMapping("/{id}")
-    public ResponseEntity<GroupEntity> getGroup(@PathVariable Integer id) {
+    public ResponseEntity<GroupEntity> getGroup(
+            @PathVariable Integer id
+    ) {
         return ResponseEntity.ok(groupService.getGroup(id));
     }
 
     @PreAuthorize("hasAuthority('GROUP_CREATE')")
     @PostMapping
-    public ResponseEntity<GroupEntity> createGroup(@AuthenticationPrincipal SecUser secUser, @RequestBody GroupDto group) {
-        GroupEntity createdGroup = groupService.createGroup(secUser, group);
+    public ResponseEntity<GroupEntity> createGroup(
+            @RequestBody GroupDto group
+    ) {
+        GroupEntity createdGroup = groupService.createGroup(group);
         var location = UriComponentsBuilder.fromPath("/groups/" + createdGroup.getId()).build().toUri();
         return ResponseEntity.created(location).body(createdGroup);
     }
@@ -51,30 +53,37 @@ public class GroupController {
     @PreAuthorize("hasAuthority('GROUP_UPDATE')")
     @PutMapping("/{groupId}")
     public ResponseEntity<GroupEntity> updateGroup (
-            @AuthenticationPrincipal SecUser secUser,
             @RequestBody GroupDto group,
             @PathVariable Integer groupId) {
-        GroupEntity updatedGroup = groupService.updateGroup(secUser, group, groupId);
+        GroupEntity updatedGroup = groupService.updateGroup(group, groupId);
         return ResponseEntity.accepted().body(updatedGroup);
     }
 
     @PreAuthorize("hasAuthority('GROUP_DELETE')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGroup(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteGroup(
+            @PathVariable Integer id
+    ) {
         groupService.deletePerson(id);
         return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasRole('TEAM_LEADER')")
     @PostMapping("/{userId}/insert/{groupId}")
-    public ResponseEntity<?> insertUserToGroup(@PathVariable Integer userId, @PathVariable Integer groupId) {
+    public ResponseEntity<?> insertUserToGroup(
+            @PathVariable Integer userId,
+            @PathVariable Integer groupId
+    ) {
         groupService.insertUserToGroup(userId, groupId);
         return ResponseEntity.noContent().build ();
     }
 
     @PreAuthorize("hasRole('TEAM_LEADER')")
     @DeleteMapping("/{userId}/remove/{groupId}")
-    public ResponseEntity<?> deleteUserFromGroup(@PathVariable Integer userId, @PathVariable Integer groupId) {
+    public ResponseEntity<?> deleteUserFromGroup(
+            @PathVariable Integer userId,
+            @PathVariable Integer groupId
+    ) {
         groupService.deleteUserFromGroup(userId, groupId);
         return ResponseEntity.noContent().build();
     }

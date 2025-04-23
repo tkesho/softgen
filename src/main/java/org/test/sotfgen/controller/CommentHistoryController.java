@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.test.sotfgen.dto.CommentHistorySearchParams;
-import org.test.sotfgen.entity.CommentHistoryEntity;
+import org.test.sotfgen.audit.CommentHistoryEntity;
 import org.test.sotfgen.service.interfaces.CommentHistoryService;
 
 @RestController
@@ -22,7 +22,7 @@ public class CommentHistoryController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public Page<CommentHistoryEntity> getAllCommentHistory(
+    public Page<CommentHistoryEntity> getCommentAllHistory(
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "ASC") Sort.Direction sortDirection,

@@ -3,7 +3,6 @@ package org.test.sotfgen.service.interfaces;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.test.sotfgen.security.SecUser;
 import org.test.sotfgen.dto.PostDto;
 import org.test.sotfgen.dto.PostSearchParams;
 import org.test.sotfgen.entity.PostEntity;
@@ -14,9 +13,9 @@ public interface PostService {
 
     PostEntity getPost(Integer postId);
 
-    PostEntity createPost(SecUser author, Integer groupId, PostDto postDto);
+    PostEntity createPost(Integer groupId, PostDto postDto);
 
-    PostEntity updatePost(SecUser userId, PostDto postDto, Integer postId);
+    PostEntity updatePost(PostDto postDto, Integer postId);
 
     void deletePost(Integer postId);
 

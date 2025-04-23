@@ -10,9 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.test.sotfgen.audit.PostHistoryEntity;
 import org.test.sotfgen.exceptions.PostNotFoundException;
 import org.test.sotfgen.exceptions.UserDoesNotHasAuthority;
-import org.test.sotfgen.security.SecUser;
 import org.test.sotfgen.dto.PostDto;
 import org.test.sotfgen.dto.PostSearchParams;
 import org.test.sotfgen.entity.*;
@@ -50,7 +50,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public PostEntity createPost(SecUser secUser, Integer groupId, PostDto postDto) {
+    public PostEntity createPost(Integer groupId, PostDto postDto) {
+        UserEntity secUser = userUtil.getActingPrincipal();
         UserEntity author = userUtil.getUserById(secUser.getId());
         GroupEntity group = groupService.getGroupById(groupId);
 
@@ -70,7 +71,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public PostEntity updatePost(SecUser userId, PostDto post, Integer postId) {
+    public PostEntity updatePost(PostDto post, Integer postId) {
+
+        UserEntity secUser = userUtil.getActingPrincipal();
 
         PostEntity postToUpdate = updatePostFields(post, postId);
         postToUpdate = postRepository.save(postToUpdate);

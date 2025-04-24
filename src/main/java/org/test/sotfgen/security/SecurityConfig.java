@@ -18,6 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.test.sotfgen.security.filter.AuthoritiesLoggingAfterFilter;
 import org.test.sotfgen.security.filter.JWTTokenValidatorFilter;
+import org.test.sotfgen.utils.UserUtil;
 
 @Configuration
 @Profile("!prod")
@@ -31,6 +32,7 @@ public class SecurityConfig {
     private String jwtHeader;
 
     private final RedisTemplate<String,String> redisTemplate;
+    private final UserUtil userUtil;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -48,8 +50,8 @@ public class SecurityConfig {
 
     @Bean
     //Filter
-    public JWTTokenValidatorFilter jwtTokenValidatorFilter(RedisTemplate<String,String> redisTemplate) {
-        return new JWTTokenValidatorFilter(jwtSecretKey, jwtHeader, redisTemplate);
+    public JWTTokenValidatorFilter jwtTokenValidatorFilter(RedisTemplate<String,String> redisTemplate, UserUtil userUtil) {
+        return new JWTTokenValidatorFilter(jwtSecretKey, jwtHeader, redisTemplate, this.userUtil);
     }
 
     @Bean
@@ -66,7 +68,7 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterAfter(authoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
-                .addFilterBefore(jwtTokenValidatorFilter(redisTemplate), BasicAuthenticationFilter.class)
+                .addFilterBefore(jwtTokenValidatorFilter(redisTemplate, userUtil), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs", "/request-password-reset", "/reset-password/**").permitAll()
                         .anyRequest().authenticated()

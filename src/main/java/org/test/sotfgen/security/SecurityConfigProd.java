@@ -18,6 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.test.sotfgen.security.filter.JWTTokenValidatorFilter;
+import org.test.sotfgen.utils.UserUtil;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +35,7 @@ public class SecurityConfigProd {
     private String jwtHeader;
 
     private final RedisTemplate<String,String> redisTemplate;
+    private final UserUtil userUtil;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -51,13 +53,13 @@ public class SecurityConfigProd {
 
     @Bean
     //Filter
-    public JWTTokenValidatorFilter jwtTokenValidatorFilter(RedisTemplate<String,String> redis) {
-        return new JWTTokenValidatorFilter(jwtSecretKey, jwtHeader, redis);
+    public JWTTokenValidatorFilter jwtTokenValidatorFilter(RedisTemplate<String,String> redis, UserUtil userUtil) {
+        return new JWTTokenValidatorFilter(jwtSecretKey, jwtHeader, redis, userUtil);
     }
 
 
     @Bean
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, UserUtil userUtil) throws Exception{
         http.sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(corsConfig -> corsConfig.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
@@ -74,7 +76,7 @@ public class SecurityConfigProd {
                 .logout(AbstractHttpConfigurer::disable)
                 .requiresChannel(rcc -> rcc.anyRequest().requiresSecure()) // HTTPS request
                 .csrf(AbstractHttpConfigurer::disable)
-                .addFilterBefore(jwtTokenValidatorFilter(redisTemplate), BasicAuthenticationFilter.class)
+                .addFilterBefore(jwtTokenValidatorFilter(redisTemplate, userUtil), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**").hasRole("ADMIN")

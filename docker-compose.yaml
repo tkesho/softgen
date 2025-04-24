@@ -1,6 +1,6 @@
 services:
   postgres:
-    container_name: db
+    container_name: postgres
     image: postgres:latest
     ports:
       - "5432:5432"

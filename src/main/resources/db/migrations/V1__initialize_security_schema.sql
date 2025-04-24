@@ -18,29 +18,11 @@ create table security.user
     last_modified_date timestamptz  not null default now()
 );
 
-create table security.role
-(
-    id serial      not null primary key,
-    name varchar(32) not null
-);
-
 create table security.authority
 (
     id        serial      not null primary key,
     name varchar(64) not null
 );
-
-create table security.user_role
-(
-    id      serial  not null primary key,
-    user_id integer not null
-        constraint user_role_user_fk references security.user (id),
-    role_id integer not null
-        constraint user_role_role_fk references security.role (id),
-
-    constraint user_id_role_id_uk unique (user_id, role_id)
-);
-
 
 create table security.user_authority
 (
@@ -58,11 +40,6 @@ create table security.user_authority
 insert into security.user (email, username, password, created_by, last_modified_by)
 values ('admin@softgen.ge', 'admin', '{bcrypt}$2a$10$./iK4EZY/vuUT4mT.ZqwuuxTWsv2/KCxPM8Ipi9WU3F5narCaIlGW', 'admin',
         'admin');
-
-insert into security.role (name)
-values ('ROLE_ADMIN'),
-       ('ROLE_TEAM_LEADER'),
-       ('ROLE_EMPLOYEE');
 
 
 insert into security.authority (name)
@@ -94,14 +71,11 @@ values ('USER_READ'),
        ('EMPLOYEE_READ'),
        ('EMPLOYEE_CREATE'),
        ('EMPLOYEE_UPDATE'),
-       ('EMPLOYEE_DELETE');
-;
+       ('EMPLOYEE_DELETE'),
+       ('ROLE_ADMIN'),
+       ('ROLE_TEAM_LEADER'),
+       ('ROLE_EMPLOYEE');
 
 insert into security.user_authority (user_id, authority_id)
 select 1, id
 from security.authority;
-
-
-insert into security.user_role (user_id, role_id)
-select 1, id
-from security.role;

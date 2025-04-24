@@ -22,6 +22,10 @@ public class UserUtil {
         return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(("user with email " + email + " not found")));
     }
 
+    public UserEntity getUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException(("user with username " + username + " not found")));
+    }
+
     public UserEntity getActingPrincipal() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -30,14 +34,7 @@ public class UserUtil {
 
     public boolean userHasAuthority(Integer userId, String permission) {
         UserEntity user = getUserById(userId);
-        return user.getRoles().stream().anyMatch(r -> r.getName().equals(permission)) ||
-                user.getAuthorities().stream().anyMatch(a -> a.getName().equals(permission));
-    }
-
-    public boolean userHasRole(Integer userId, String role) {
-        UserEntity user = getUserById(userId);
-        return user.getRoles().stream()
-                .anyMatch(r -> r.getName().equals(role));
+        return user.getAuthorities().stream().anyMatch(a -> a.getName().equals(permission));
     }
 
     public String generateRandomPassword(int length) {

@@ -27,12 +27,11 @@ public class TokenUtil {
     private final RedisTemplate<String, String> redisTemplate;
 
     // Generate Access Token
-    public String generateAccessToken(String username, String authorities) {
+    public String generateAccessToken(String username) {
         String jwtToken = Jwts.builder()
                 .issuer("Softgen")
                 .subject("JWT Access Token")
                 .claim("username", username)
-                .claim("authorities", authorities)
                 .issuedAt(new Date())
                 .expiration(new Date(new Date().getTime() + accessTokenExpirationMs))
                 .signWith(Keys.hmacShaKeyFor(jwtSecretKey.getBytes(StandardCharsets.UTF_8))).compact();

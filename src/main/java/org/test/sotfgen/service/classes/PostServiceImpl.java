@@ -103,7 +103,7 @@ public class PostServiceImpl implements PostService {
         }
 
         if (postDto.getGroupId() != null && !postDto.getGroupId().equals(getPostById(postId).getGroup().getId())) {
-            if(!userUtil.userHasRole(postDto.getGroupId(), "ROLE_ADMIN")) {
+            if(!userUtil.userHasAuthority(postDto.getGroupId(), "ROLE_ADMIN")) {
                 throw new UserDoesNotHasAuthority("user with id " + postDto.getOwnerId() + " does not have ADMIN role to change location of the post");
             }
             if(postDto.getGroupId() != null) {

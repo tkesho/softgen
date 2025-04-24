@@ -38,16 +38,7 @@ public class UserEntity extends BaseAuditTable {
     private Boolean active;
 
     @JsonBackReference
-    @ManyToMany()
-    @JoinTable(
-            name = "user_role", schema = "security",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<RoleEntity> roles;
-
-    @JsonBackReference
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_authority", schema = "security",
             joinColumns = @JoinColumn(name = "user_id"),

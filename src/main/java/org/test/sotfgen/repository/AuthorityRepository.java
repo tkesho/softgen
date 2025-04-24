@@ -4,5 +4,5 @@ import org.springframework.stereotype.Repository;
 import org.test.sotfgen.entity.AuthorityEntity;
 
 @Repository
-public interface authorityRepository extends BasicRepository<AuthorityEntity, Integer> {
+public interface AuthorityRepository extends BasicRepository<AuthorityEntity, Integer> {
 }

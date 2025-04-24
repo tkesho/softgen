@@ -17,11 +17,6 @@ public class SecUser implements UserDetails {
         this.password = user.getPassword();
         this.enabled = user.getActive();
         this.authorities = new ArrayList<>();
-        if (user.getRoles() != null) {
-            this.authorities.addAll(user.getRoles().stream()
-                    .map(role -> new SimpleGrantedAuthority(role.getName()))
-                    .toList());
-        }
         if (user.getAuthorities() != null) {
             this.authorities.addAll(user.getAuthorities().stream()
                     .map(authority -> new SimpleGrantedAuthority(authority.getName()))

@@ -39,7 +39,7 @@ public class TokenServiceImpl implements TokenService {
         String authorities = authentication.getAuthorities().stream().map(
                 GrantedAuthority::getAuthority).collect(Collectors.joining(","));
 
-        return tokenUtil.generateAccessToken(username, authorities);
+        return tokenUtil.generateAccessToken(username);
     }
 
     @Override

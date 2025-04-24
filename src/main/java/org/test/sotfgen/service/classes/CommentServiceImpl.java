@@ -19,7 +19,7 @@ import org.test.sotfgen.audit.CommentHistoryEntity;
 import org.test.sotfgen.mapper.CommentMapper;
 import org.test.sotfgen.repository.CommentHistoryRepository;
 import org.test.sotfgen.repository.CommentRepository;
-import org.test.sotfgen.repository.PersonDetailRepository;
+import org.test.sotfgen.repository.PersonRepository;
 import org.test.sotfgen.security.SecUser;
 import org.test.sotfgen.service.interfaces.CommentService;
 import org.test.sotfgen.service.interfaces.PostService;
@@ -32,7 +32,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
     private final CommentHistoryRepository commentHistoryRepository;
-    private final PersonDetailRepository personDetailService;
+    private final PersonRepository personDetailService;
     private final PostService postService;
 
     @Override

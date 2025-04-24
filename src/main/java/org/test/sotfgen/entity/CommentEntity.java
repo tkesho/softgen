@@ -34,7 +34,7 @@ public class CommentEntity extends BaseAuditTable {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "author_id", nullable = false)
-    private PersonDetailEntity author;
+    private PersonEntity author;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CommentEntity> children = new LinkedHashSet<>();

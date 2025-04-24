@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.test.sotfgen.dto.GroupDto;
 import org.test.sotfgen.dto.GroupSearchParams;
 import org.test.sotfgen.entity.GroupEntity;
+import org.test.sotfgen.entity.PersonEntity;
 import org.test.sotfgen.entity.UserEntity;
 import org.test.sotfgen.exceptions.GroupNotFoundException;
 import org.test.sotfgen.exceptions.MemberAndGroupRelationException;
@@ -20,7 +21,7 @@ import org.test.sotfgen.exceptions.UserDoesNotHasAuthority;
 import org.test.sotfgen.mapper.GroupMapper;
 import org.test.sotfgen.repository.GroupRepository;
 import org.test.sotfgen.service.interfaces.GroupService;
-import org.test.sotfgen.service.interfaces.UserService;
+import org.test.sotfgen.service.interfaces.PersonService;
 import org.test.sotfgen.utils.UserUtil;
 
 import java.util.List;
@@ -30,7 +31,7 @@ import java.util.List;
 public class GroupServiceImpl implements GroupService {
 
     private final GroupRepository groupRepository;
-    private final UserService userService;
+    private final PersonService personService;
     private final UserUtil userUtil;
     private final GroupMapper groupMapper;
 
@@ -86,12 +87,12 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional
-    public void insertUserToGroup(Integer userId, Integer groupId) {
-        UserEntity member = userUtil.getUserById(userId);
+    public void insertUserToGroup(Integer personId, Integer groupId) {
+        PersonEntity member = personService.getPerson(personId);
         GroupEntity group = getGroupById(groupId);
 
         if (group.getMembers().contains(member)) {
-            throw new MemberAndGroupRelationException("user with id " + userId + " already belongs to group with id " + groupId);
+            throw new MemberAndGroupRelationException("user with id " + personId + " already belongs to group with id " + groupId);
         }
 
         group.getMembers().add(member);
@@ -101,12 +102,12 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public void deleteUserFromGroup(Integer userId, Integer groupId) {
-        UserEntity member = userUtil.getUserById(userId);
+    public void deleteUserFromGroup(Integer personId, Integer groupId) {
+        PersonEntity member = personService.getPerson(personId);
         GroupEntity group = getGroupById(groupId);
 
         if (!group.getMembers().contains(member)) {
-            throw new MemberAndGroupRelationException("user with id " + userId + " does not belong to group with id " + groupId);
+            throw new MemberAndGroupRelationException("user with id " + personId + " does not belong to group with id " + groupId);
         }
 
         group.getMembers().remove(member);

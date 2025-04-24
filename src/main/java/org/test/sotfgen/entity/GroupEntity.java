@@ -39,11 +39,11 @@ public class GroupEntity extends BaseAuditTable {
     @JsonManagedReference
     @ManyToMany
     @JoinTable(
-            name = "person_detail_group", schema = "social",
+            name = "person_group", schema = "social",
             joinColumns = @JoinColumn(name = "group_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
+            inverseJoinColumns = @JoinColumn(name = "person_id")
     )
-    private Set<UserEntity> members;
+    private Set<PersonEntity> members;
 
     @NotNull
     @ColumnDefault("true")

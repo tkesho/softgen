@@ -20,9 +20,9 @@ public interface GroupService {
 
     void deletePerson(Integer id);
 
-    void insertUserToGroup(Integer userId, Integer groupId);
+    void insertUserToGroup(Integer personId, Integer groupId);
 
-    void deleteUserFromGroup(Integer userId, Integer groupId);
+    void deleteUserFromGroup(Integer personId, Integer groupId);
 
     GroupEntity getGroupById(Integer id);
 }

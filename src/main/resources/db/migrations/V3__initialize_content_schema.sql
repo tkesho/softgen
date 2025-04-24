@@ -16,7 +16,7 @@ create table content.post
     id serial primary key,
     title varchar(255) not null,
     body varchar(1024) not null,
-    owner_id integer not null constraint post_person_detail_fk references social.person_detail (id),
+    owner_id integer not null constraint post_person_fk references social.person (id),
     group_id integer not null constraint post_group_fk references social.group (id),
     hidden boolean not null default false,
 
@@ -30,7 +30,7 @@ create table content.comment
 (
     id serial primary key,
     post_id integer not null constraint comment_post_fk references content.post (id),
-    author_id integer not null constraint comment_person_detail_fk references social.person_detail (id),
+    author_id integer not null constraint comment_person_fk references social.person (id),
     parent_id integer constraint comment_comment_fk references content.comment (id),
     body varchar(1024) not null,
     hidden boolean not null default false,

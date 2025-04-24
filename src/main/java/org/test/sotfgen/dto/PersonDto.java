@@ -6,14 +6,14 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.test.sotfgen.entity.PersonDetailEntity;
+import org.test.sotfgen.entity.PersonEntity;
 
 import java.time.LocalDate;
 
 @Setter
 @Getter
 @NoArgsConstructor
-public class PersonDetailDto {
+public class PersonDto {
     @NotNull
     @NotBlank
     private String firstName;
@@ -31,7 +31,7 @@ public class PersonDetailDto {
     private String phoneNumber;
     @NotNull
     @NotBlank
-    private PersonDetailEntity.Gender gender;
+    private PersonEntity.Gender gender;
     @NotNull
     @NotBlank
     private String nationalId;

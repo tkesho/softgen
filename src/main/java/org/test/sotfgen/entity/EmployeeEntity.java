@@ -18,7 +18,7 @@ public class EmployeeEntity extends BaseAuditTable {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "person_id", nullable = false)
-    private PersonDetailEntity person;
+    private PersonEntity person;
 
     @Column(name = "position", nullable = false)
     private String position;

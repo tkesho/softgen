@@ -8,13 +8,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.test.sotfgen.exceptions.IncorrectPasswordException;
 import org.test.sotfgen.dto.ChangePasswordDto;
 import org.test.sotfgen.dto.Password;
 import org.test.sotfgen.dto.UserDto;
+import org.test.sotfgen.entity.PersonEntity;
 import org.test.sotfgen.entity.UserEntity;
+import org.test.sotfgen.exceptions.IncorrectPasswordException;
+import org.test.sotfgen.mapper.PersonMapper;
 import org.test.sotfgen.mapper.UserMapper;
 import org.test.sotfgen.repository.UserRepository;
+import org.test.sotfgen.service.interfaces.PersonService;
 import org.test.sotfgen.service.interfaces.UserService;
 import org.test.sotfgen.utils.TokenUtil;
 import org.test.sotfgen.utils.UserUtil;
@@ -30,6 +33,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailSenderService emailSenderService;
     private final TokenUtil tokenUtil;
+    private final PersonService personService;
+    private final PersonMapper personMapper;
 
     @Override
     public Page<UserEntity> getUsers(Pageable pageable) {
@@ -46,7 +51,9 @@ public class UserServiceImpl implements UserService {
     public UserEntity createUser(UserDto user) {
         UserEntity userToCreate = userMapper.userDtoToUser(user);
         userToCreate.setPassword(passwordEncoder.encode(userToCreate.getPassword()));
-        return userRepository.save(userToCreate);
+        UserEntity userToSave = userRepository.save(userToCreate);
+        personService.createPerson(personMapper.personDetailToPersonDetailDto(new PersonEntity()), userToSave.getId());
+        return userToSave;
     }
 
     @Override

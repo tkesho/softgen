@@ -55,11 +55,6 @@ public class UserEntity extends BaseAuditTable {
     )
     private Set<AuthorityEntity> authorities;
 
-
-    @JsonBackReference
-    @ManyToMany(mappedBy = "members", fetch =  FetchType.EAGER)
-    private Set<GroupEntity> groups;
-
     @PrePersist
     private void prePersist() {
         if (this.active == null) {

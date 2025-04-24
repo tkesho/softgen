@@ -31,7 +31,7 @@ create table audit.comment_history
     id serial primary key,
     comment_id integer not null,
     post_id integer not null constraint comment_post_fk references content.post (id),
-    author_id integer not null constraint comment_person_detail_fk references social.person_detail (id),
+    author_id integer not null constraint comment_person_fk references social.person (id),
     parent_id integer constraint comment_comment_fk references content.comment (id),
     body varchar(1024) not null,
     hidden boolean not null default false,

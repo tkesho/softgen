@@ -8,7 +8,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -22,7 +24,6 @@ public class TokenUtil {
     @Value("${jwt.refresh-token.expiration}")
     private Long refreshTokenExpirationMs;
 
-    private final UserUtil userUtil;
     private final RedisTemplate<String, String> redisTemplate;
 
     // Generate Access Token
@@ -57,5 +58,20 @@ public class TokenUtil {
         redisTemplate.opsForValue().set(username, jwtToken, refreshTokenExpirationMs, TimeUnit.MILLISECONDS);
 
         return jwtToken;
+    }
+
+    public String passwordResetToken(String email) {
+        String token = UUID.randomUUID().toString();
+        String redisKey = "reset:" + token;
+
+        redisTemplate.opsForValue().set(redisKey, email, Duration.ofMinutes(30));
+        return token;
+    }
+
+    public String validatePasswordResetToken(String token) {
+        String redisKey = "reset:" + token;
+        String email = redisTemplate.opsForValue().get(redisKey);
+        redisTemplate.delete(redisKey);
+        return email;
     }
 }

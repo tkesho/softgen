@@ -7,6 +7,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.test.sotfgen.dto.AuthRequestDto;
 import org.test.sotfgen.entity.UserEntity;
@@ -24,6 +25,8 @@ public class TokenServiceImpl implements TokenService {
     private final AuthenticationManager authenticationManager;
     private final UserUtil userUtil;
     private final TokenUtil tokenUtil;
+    private final EmailSenderService emailService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public String authenticateAndGenerateToken(AuthRequestDto request) {
@@ -48,5 +51,28 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public String refreshToken(String token) {
         return "";
+    }
+
+    @Override
+    public void forgetPassword(String email) {
+        try {
+            userUtil.getUserByEmail(email);
+        } catch (Exception e) {
+            throw new RuntimeException("User with email " + email + " not found");
+        }
+
+        String resetLink = "https://localhost:8080/reset-password?token=" + tokenUtil.passwordResetToken(email);
+        emailService.sendEmail(email, "Reset Password", "Click here: " + resetLink);
+    }
+
+    @Override
+    public void resetPassword(String token) {
+        UserEntity user = userUtil.getUserByEmail(tokenUtil.validatePasswordResetToken(token));
+
+        String newPassword = userUtil.generateRandomPassword(12);
+        user.setPassword(passwordEncoder.encode(newPassword));
+
+        String message = String.format("Hello %s, Your new password has been set to: %s !", user.getUsername(), newPassword);
+        emailService.sendEmail(user.getEmail(), "Password reset", message);
     }
 }

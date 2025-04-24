@@ -9,6 +9,10 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends BasicRepository<UserEntity, Integer> {
+
     Page<UserEntity> findByActive(Boolean active, Pageable pageable);
+
     Optional<UserEntity> findByUsername(String username);
+
+    Optional<UserEntity> findByEmail(String email);
 }

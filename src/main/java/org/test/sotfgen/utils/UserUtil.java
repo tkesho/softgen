@@ -18,6 +18,10 @@ public class UserUtil {
         return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(("user with id " + userId + " not found")));
     }
 
+    public UserEntity getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(("user with email " + email + " not found")));
+    }
+
     public UserEntity getActingPrincipal() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();

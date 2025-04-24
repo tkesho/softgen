@@ -10,4 +10,8 @@ public interface TokenService {
     void logout();
 
     String refreshToken(String token);
+
+    void forgetPassword(String emailAddress);
+
+    void resetPassword(String token);
 }

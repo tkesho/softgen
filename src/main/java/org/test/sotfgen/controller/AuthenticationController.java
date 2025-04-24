@@ -1,7 +1,6 @@
 package org.test.sotfgen.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +11,6 @@ import org.test.sotfgen.service.interfaces.TokenService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping()
-@Slf4j
 public class AuthenticationController {
 
     private final TokenService tokenService;
@@ -33,5 +30,17 @@ public class AuthenticationController {
     public ResponseEntity<String> logout() {
         tokenService.logout();
         return ResponseEntity.ok("Logout successful");
+    }
+
+    @PostMapping("/request-password-reset")
+    ResponseEntity<String> forgetPassword(@RequestBody String email) {
+        tokenService.forgetPassword(email);
+        return ResponseEntity.ok("Password reset email sent");
+    }
+
+    @GetMapping("/reset-password")
+    ResponseEntity<String> resetPassword(@RequestParam String token) {
+        tokenService.resetPassword(token);
+        return ResponseEntity.ok("Password reset successful");
     }
 }

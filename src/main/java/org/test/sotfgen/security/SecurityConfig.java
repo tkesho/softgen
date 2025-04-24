@@ -68,7 +68,7 @@ public class SecurityConfig {
                 .addFilterAfter(authoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(jwtTokenValidatorFilter(redisTemplate), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs").permitAll()
+                        .requestMatchers("/login", "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs", "/request-password-reset", "/reset-password/**").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();

@@ -74,7 +74,6 @@ public class PostServiceImpl implements PostService {
     public PostEntity updatePost(PostDto post, Integer postId) {
 
         UserEntity secUser = userUtil.getActingPrincipal();
-
         PostEntity postToUpdate = updatePostFields(post, postId);
         postToUpdate = postRepository.save(postToUpdate);
 

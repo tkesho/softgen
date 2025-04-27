@@ -7,7 +7,7 @@ import java.io.InputStream;
 @Service
 public interface MinioService {
 
-    void uploadFile(String fileName, InputStream inputStream, Integer contentLength, String contentType);
+    String uploadFile(String fileName, InputStream inputStream, Integer contentLength, String contentType);
 
-    byte[] downloadFile(String fileName);
+    byte[] downloadFile(String objectKey);
 }

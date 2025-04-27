@@ -10,7 +10,7 @@ import org.test.sotfgen.service.interfaces.MinioService;
 
 import java.io.InputStream;
 
-@Service
+@Service("MinioServiceMinio")
 @RequiredArgsConstructor
 public class MinioServiceMinio implements MinioService {
 
@@ -19,7 +19,7 @@ public class MinioServiceMinio implements MinioService {
     private String BUCKET_NAME;
 
     @Override
-    public void uploadFile(String fileName, InputStream inputStream, Integer contentLength, String contentType) {
+    public String uploadFile(String fileName, InputStream inputStream, Integer contentLength, String contentType) {
         try {
             minioClient.putObject(
                     PutObjectArgs.builder()
@@ -32,15 +32,17 @@ public class MinioServiceMinio implements MinioService {
         } catch (Exception e) {
             throw new RuntimeException("Error uploading file to Minio", e);
         }
+        
+        return "http://localhost:9000/" + BUCKET_NAME + "/" + fileName;
     }
 
     @Override
-    public byte[] downloadFile(String fileName) {
+    public byte[] downloadFile(String objectKey) {
         try {
             return minioClient.getObject(
                     GetObjectArgs.builder()
                             .bucket(BUCKET_NAME)
-                            .object(fileName)
+                            .object(objectKey)
                             .build()
             ).readAllBytes();
         } catch (Exception e) {

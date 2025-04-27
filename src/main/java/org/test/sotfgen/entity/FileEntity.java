@@ -20,7 +20,7 @@ public class FileEntity extends BaseAuditTable {
     @Size(max = 255)
     @NotNull
     @Column(name = "name", nullable = false)
-    private String fileName;
+    private String name;
 
     @Size(max = 255)
     @NotNull
@@ -33,5 +33,5 @@ public class FileEntity extends BaseAuditTable {
 
     @NotNull
     @Column(name = "size", nullable = false)
-    private Integer size;
+    private Long size;
 }

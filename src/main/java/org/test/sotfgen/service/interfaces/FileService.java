@@ -1,9 +1,11 @@
 package org.test.sotfgen.service.interfaces;
 
 import org.springframework.stereotype.Service;
-import org.test.sotfgen.entity.FileEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public interface FileService {
-    FileEntity getFileById(Integer id);
+    byte[] downloadFile(String objectKey);
+
+    String uploadFile(String key, MultipartFile file);
 }

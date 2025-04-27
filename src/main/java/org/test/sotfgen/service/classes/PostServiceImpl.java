@@ -59,9 +59,9 @@ public class PostServiceImpl implements PostService {
             postToCreate.setUser(author);
             postToCreate.setGroup(group);
             Set<FileEntity> files = new HashSet<>();
-            if(postDto.getFileIds() != null && !postDto.getFileIds().isEmpty()) {
-                postDto.getFileIds().forEach(file -> files.add(fileService.getFileById(file)));
-            }
+//            if(postDto.getFileIds() != null && !postDto.getFileIds().isEmpty()) {
+//                postDto.getFileIds().forEach(file -> files.add(fileService.getFileByName(file)));
+//            }
             postToCreate.setFiles(files);
             postRepository.save(postToCreate);
             postRepository.flush();
@@ -130,7 +130,7 @@ public class PostServiceImpl implements PostService {
         }
         if (postDto.getFileIds() != null && !postDto.getFileIds().isEmpty()) {
             Set<FileEntity> files = new HashSet<>();
-            postDto.getFileIds().forEach(postFileId -> files.add(fileService.getFileById(postFileId)));
+            //postDto.getFileIds().forEach(postFileId -> files.add(fileService.getFileByName(postFileId)));
             newPost.setFiles(files);
         }
 

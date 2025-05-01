@@ -1,4 +1,4 @@
-package org.test.sotfgen.service.classes;
+package org.test.sotfgen.service.impl;
 
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -95,7 +95,7 @@ public class CommentServiceImpl implements CommentService {
         Predicate predicate = cb.conjunction();
 
         if (params.getPostId() != null) {
-            predicate = cb.and(predicate, cb.equal(root.get("post_id"), params.getPostId()));
+            predicate = cb.and(predicate, cb.equal(root.get("postId"), params.getPostId()));
         }
         if (params.getBody() != null && StringUtils.isNotBlank(params.getBody())) {
             predicate = cb.and(predicate, cb.like(root.get("body"), "%" + params.getBody() + "%"));

@@ -1,4 +1,4 @@
-package org.test.sotfgen.service.classes;
+package org.test.sotfgen.service.impl;
 
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;

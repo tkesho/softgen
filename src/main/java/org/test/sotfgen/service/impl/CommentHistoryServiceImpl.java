@@ -1,4 +1,4 @@
-package org.test.sotfgen.service.classes;
+package org.test.sotfgen.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,13 +22,13 @@ public class CommentHistoryServiceImpl implements CommentHistoryService {
             var predicate = criteriaBuilder.conjunction();
 
             if (params.getPostId() != null) {
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("post_id"), params.getPostId()));
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("postId"), params.getPostId()));
             }
             if (params.getCommentId() != null) {
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("comment_id"), params.getCommentId()));
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("commentId"), params.getCommentId()));
             }
             if (params.getPersonId() != null) {
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("author_id"), params.getPersonId()));
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("authorId"), params.getPersonId()));
             }
             if (params.getBody() != null) {
                 predicate = criteriaBuilder.and(predicate, criteriaBuilder.like(root.get("body"), "%" + params.getBody() + "%"));

@@ -1,4 +1,4 @@
-package org.test.sotfgen.service.classes;
+package org.test.sotfgen.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,10 +30,10 @@ public class PostHistoryServiceImpl implements PostHistoryService {
                 predicate = criteriaBuilder.and(predicate, criteriaBuilder.like(root.get("body"), "%" + params.body() + "%"));
             }
             if (params.ownerId() != null) {
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("owner_id"), params.ownerId()));
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("ownerId"), params.ownerId()));
             }
             if (params.groupId() != null) {
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("group_id"), params.groupId()));
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("groupId"), params.groupId()));
             }
             if (params.hidden() != null) {
                 predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("hidden"), params.hidden()));

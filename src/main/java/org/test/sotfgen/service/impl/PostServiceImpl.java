@@ -1,4 +1,4 @@
-package org.test.sotfgen.service.classes;
+package org.test.sotfgen.service.impl;
 
 
 import io.micrometer.common.util.StringUtils;
@@ -147,10 +147,10 @@ public class PostServiceImpl implements PostService {
             predicate = cb.and(predicate, cb.like(root.get("body"), "%" + params.getBody() + "%"));
         }
         if (params.getUserId() != null) {
-            predicate = cb.and(predicate, cb.equal(root.get("user_id"), params.getUserId()));
+            predicate = cb.and(predicate, cb.equal(root.get("user"), params.getUserId()));
         }
         if (params.getGroupId() != null) {
-            predicate = cb.and(predicate, cb.equal(root.get("group_id"), params.getGroupId()));
+            predicate = cb.and(predicate, cb.equal(root.get("group"), params.getGroupId()));
         }
         if (params.getActive() != null) {
             predicate = cb.and(predicate, cb.equal(root.get("active"), params.getActive()));

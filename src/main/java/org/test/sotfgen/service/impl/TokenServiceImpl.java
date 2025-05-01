@@ -1,4 +1,4 @@
-package org.test.sotfgen.service.classes;
+package org.test.sotfgen.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +61,7 @@ public class TokenServiceImpl implements TokenService {
             throw new RuntimeException("User with email " + email + " not found");
         }
 
-        String resetLink = "https://localhost:8080/reset-password?token=" + tokenUtil.passwordResetToken(email);
+        String resetLink = "http://localhost:8080/reset-password?token=" + tokenUtil.passwordResetToken(email);
         emailService.sendEmail(email, "Reset Password", "Click here: " + resetLink);
     }
 

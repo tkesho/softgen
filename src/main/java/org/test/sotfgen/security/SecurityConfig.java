@@ -18,6 +18,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.test.sotfgen.security.filter.AuthoritiesLoggingAfterFilter;
 import org.test.sotfgen.security.filter.JWTTokenValidatorFilter;
+import org.test.sotfgen.security.filter.RequestLoggingFilter;
+import org.test.sotfgen.service.interfaces.LoggingService;
 import org.test.sotfgen.utils.UserUtil;
 
 @Configuration
@@ -52,6 +54,12 @@ public class SecurityConfig {
     //Filter
     public JWTTokenValidatorFilter jwtTokenValidatorFilter(RedisTemplate<String,String> redisTemplate, UserUtil userUtil) {
         return new JWTTokenValidatorFilter(jwtSecretKey, jwtHeader, redisTemplate, this.userUtil);
+    }
+
+    @Bean
+    //Filter
+    public RequestLoggingFilter requestLoggingFilter(LoggingService loggingService) {
+        return new RequestLoggingFilter(loggingService);
     }
 
     @Bean

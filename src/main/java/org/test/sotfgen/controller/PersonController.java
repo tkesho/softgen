@@ -41,9 +41,8 @@ public class PersonController {
         return ResponseEntity.ok(personService.getPerson(id));
     }
 
-    @PutMapping("/{personId}")
+    @PutMapping
     public ResponseEntity<PersonEntity> updateUser(
-            @PathVariable Integer personId,
             @RequestBody PersonDto person
     ) {
         PersonEntity updatedPerson = personService.updatePerson(person);

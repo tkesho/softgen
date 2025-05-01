@@ -1,4 +1,4 @@
-package org.test.sotfgen.service.classes;
+package org.test.sotfgen.service.impl;
 
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.criteria.*;
@@ -67,19 +67,19 @@ public class PersonServiceImpl implements PersonService {
     private Predicate getPredicate(PersonDetailSearchParams params, Root<PersonEntity> root, CriteriaBuilder cb) {
         Predicate predicate = cb.conjunction();
         if (StringUtils.isNotBlank(params.getFirstName())) {
-            predicate = cb.and(predicate, cb.like(root.get("first_name"), "%" + params.getFirstName() + "%"));
+            predicate = cb.and(predicate, cb.like(root.get("firstName"), "%" + params.getFirstName() + "%"));
         }
         if (StringUtils.isNotBlank(params.getLastName())) {
-            predicate = cb.and(predicate, cb.like(root.get("last_name"), "%" + params.getLastName() + "%"));
+            predicate = cb.and(predicate, cb.like(root.get("lastName"), "%" + params.getLastName() + "%"));
         }
         if (StringUtils.isNotBlank(params.getNationalId())) {
-            predicate = cb.and(predicate, cb.like(root.get("national_id"), "%" + params.getNationalId() + "%"));
+            predicate = cb.and(predicate, cb.like(root.get("nationalId"), "%" + params.getNationalId() + "%"));
         }
         if (StringUtils.isNotBlank(params.getAddress())) {
             predicate = cb.and(predicate, cb.like(root.get("address"), "%" + params.getAddress() + "%"));
         }
         if (StringUtils.isNotBlank(params.getPhoneNumber())) {
-            predicate = cb.and(predicate, cb.like(root.get("phone_number"), "%" + params.getPhoneNumber() + "%"));
+            predicate = cb.and(predicate, cb.like(root.get("phoneNumber"), "%" + params.getPhoneNumber() + "%"));
         }
         if (params.getGender() != null) {
             predicate = cb.and(predicate, cb.equal(root.get("gender"), params.getGender()));

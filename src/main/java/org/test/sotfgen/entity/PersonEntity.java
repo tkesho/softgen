@@ -60,7 +60,6 @@ public class PersonEntity extends BaseAuditTable {
             inverseJoinColumns = @JoinColumn(name = "group_id"))
     private Set<GroupEntity> groups;
 
-
     public enum Gender {
         MALE, FEMALE, OTHER
     }

@@ -18,6 +18,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.test.sotfgen.security.filter.JWTTokenValidatorFilter;
+import org.test.sotfgen.security.filter.RequestLoggingFilter;
+import org.test.sotfgen.service.interfaces.LoggingService;
 import org.test.sotfgen.utils.UserUtil;
 
 import java.util.Collections;
@@ -36,6 +38,7 @@ public class SecurityConfigProd {
 
     private final RedisTemplate<String,String> redisTemplate;
     private final UserUtil userUtil;
+    private final LoggingService loggingService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -53,10 +56,15 @@ public class SecurityConfigProd {
 
     @Bean
     //Filter
+    public RequestLoggingFilter requestLoggingFilter(LoggingService loggingService) {
+        return new RequestLoggingFilter(loggingService);
+    }
+
+    @Bean
+    //Filter
     public JWTTokenValidatorFilter jwtTokenValidatorFilter(RedisTemplate<String,String> redis, UserUtil userUtil) {
         return new JWTTokenValidatorFilter(jwtSecretKey, jwtHeader, redis, userUtil);
     }
-
 
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, UserUtil userUtil) throws Exception{

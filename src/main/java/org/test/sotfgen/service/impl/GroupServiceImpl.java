@@ -1,4 +1,4 @@
-package org.test.sotfgen.service.classes;
+package org.test.sotfgen.service.impl;
 
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -158,7 +158,7 @@ public class GroupServiceImpl implements GroupService {
             predicate = cb.and(predicate, cb.like(root.get("description"), "%" + params.getDescription() + "%"));
         }
         if (params.getOwnerId() != null) {
-            predicate = cb.and(predicate, cb.equal(root.get("owner_id"), params.getOwnerId()));
+            predicate = cb.and(predicate, cb.equal(root.get("ownerId"), params.getOwnerId()));
         }
         if (params.getActive() != null) {{
             predicate = cb.and(predicate, cb.equal(root.get("active"), params.getActive()));

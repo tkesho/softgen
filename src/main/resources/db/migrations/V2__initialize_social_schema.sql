@@ -79,6 +79,28 @@ create table social.person_group
     constraint user_id_group_id_uk unique (person_id, group_id)
 );
 
+create table social.team
+(
+    id        serial  not null primary key,
+    name      varchar(64) not null,
+    manager_id integer not null
+        constraint team_employee_fk references social.employee (id),
+    description varchar(256)
+);
+
+
+create table social.employee_team
+(
+    id        serial  not null primary key,
+    employee_id integer not null
+        constraint employee_team_employee_fk references social.employee (id),
+    team_id    integer not null
+        constraint employee_team_team_fk references social.team (id),
+
+    constraint employee_id_team_id_uk unique (employee_id, team_id)
+);
+
+
 INSERT INTO social.person (first_name, last_name, birth_date, gender, national_id, address, phone_number, "user_id","created_by","created_date","last_modified_by","last_modified_date")
 
 VALUES ('Davit',

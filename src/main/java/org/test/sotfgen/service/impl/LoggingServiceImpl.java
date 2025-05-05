@@ -1,4 +1,4 @@
-package org.test.sotfgen.service.interfaces;
+package org.test.sotfgen.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.test.sotfgen.entity.HttpRequestEntity;
 import org.test.sotfgen.repository.LoggingRepository;
+import org.test.sotfgen.service.interfaces.LoggingService;
 import org.test.sotfgen.utils.UserUtil;
 
 import java.io.BufferedReader;

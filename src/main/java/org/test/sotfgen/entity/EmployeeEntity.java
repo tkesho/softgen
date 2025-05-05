@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.test.sotfgen.audit.BaseAuditTable;
 
+import java.util.List;
+
 @Setter
 @Getter
 @Entity
@@ -31,6 +33,14 @@ public class EmployeeEntity extends BaseAuditTable {
 
     @Column(name = "status", nullable = false)
     private EmploymentStatus employmentStatus;
+
+    @ManyToMany
+    @JoinTable(
+            name = "employee_team", schema = "social",
+            joinColumns = @JoinColumn(name = "employee_id"),
+            inverseJoinColumns = @JoinColumn(name = "team_id")
+    )
+    private List<TeamEntity> teams;
 
     public enum EmploymentStatus {
         ACTIVE,

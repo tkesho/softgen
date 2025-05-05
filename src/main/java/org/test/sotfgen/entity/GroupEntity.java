@@ -31,7 +31,6 @@ public class GroupEntity extends BaseAuditTable {
     @Column(name = "description", length = 256)
     private String description;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id", nullable = false)
     private UserEntity owner;
@@ -45,7 +44,6 @@ public class GroupEntity extends BaseAuditTable {
     )
     private Set<PersonEntity> members;
 
-    @NotNull
     @ColumnDefault("true")
     @Column(name = "active")
     private Boolean active = true;

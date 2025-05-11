@@ -5,11 +5,11 @@ plugins {
 }
 
 group = 'org.test'
-version = '0.0.1-SNAPSHOT'
+version = '1.0'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(23)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -39,7 +39,8 @@ dependencies {
             'io.minio:minio:8.5.17',
             'io.jsonwebtoken:jjwt-api:0.12.6',
             'org.springframework.boot:spring-boot-starter-data-redis',
-            'redis.clients:jedis:5.2.0'
+            'redis.clients:jedis:5.2.0',
+            'org.springframework.boot:spring-boot-starter-webflux'
     )
 
     compileOnly(
@@ -64,7 +65,8 @@ dependencies {
 
     testImplementation(
             'org.springframework.boot:spring-boot-starter-test',
-            'org.springframework.security:spring-security-test'
+            'org.springframework.security:spring-security-test',
+            'io.projectreactor:reactor-test'
     )
 
     testRuntimeOnly(

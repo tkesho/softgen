@@ -53,7 +53,7 @@ public class SecurityConfig {
     @Bean
     //Filter
     public JWTTokenValidatorFilter jwtTokenValidatorFilter(RedisTemplate<String,String> redisTemplate, UserUtil userUtil) {
-        return new JWTTokenValidatorFilter(jwtSecretKey, jwtHeader, redisTemplate, this.userUtil);
+        return new JWTTokenValidatorFilter(jwtSecretKey, jwtHeader, redisTemplate, userUtil);
     }
 
     @Bean
@@ -71,7 +71,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception{
         http.sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(AbstractHttpConfigurer::disable)
+                    .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)

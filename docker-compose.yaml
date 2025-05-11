@@ -5,7 +5,8 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: tkesho
+      POSTGRES_PASSWORD: tkesho
     volumes:
       - postgres_data:/var/lib/postgres/data
 
@@ -38,6 +39,18 @@ services:
     ports:
       - "8025:8025"
       - "1025:1025"
+
+  springboot:
+    container_name: springboot
+    build: .
+    image: springboot
+    ports:
+        - "8080:8080"
+    depends_on:
+        - postgres
+        - minio
+        - redis
+        - mailHog
 
 
 volumes:

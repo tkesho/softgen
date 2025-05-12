@@ -55,7 +55,7 @@ public class PostServiceImpl implements PostService {
         UserEntity author = userUtil.getUserById(secUser.getId());
         GroupEntity group = groupService.getGroupById(groupId);
 
-            PostEntity postToCreate = postMapper.postDtoToPostEntity(postDto);
+            PostEntity postToCreate = postMapper.toEntity(postDto);
             postToCreate.setUser(author);
             postToCreate.setGroup(group);
             Set<FileEntity> files = new HashSet<>();

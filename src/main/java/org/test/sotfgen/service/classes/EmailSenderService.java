@@ -32,7 +32,7 @@ public class EmailSenderService {
         message.setSubject(subject);
         message.setText(body);
 
-        EmailEntity email = emailMapper.emailDtoToEmailEntity(new EmailDto("info@softgen.ge", toEmail, subject, body));
+        EmailEntity email = emailMapper.toEntity(new EmailDto("info@softgen.ge", toEmail, subject, body));
 
         emailRepository.save(email);
         emailSender.send(message);

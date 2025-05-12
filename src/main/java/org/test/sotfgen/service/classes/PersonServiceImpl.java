@@ -38,7 +38,7 @@ public class PersonServiceImpl implements PersonService {
     @Override
     @Transactional
     public PersonEntity createPerson(PersonDto personDto, Integer userId) {
-        PersonEntity personToCreate = personMapper.personDetailDtoToPersonDetail(personDto);
+        PersonEntity personToCreate = personMapper.toEntity(personDto);
         UserEntity userToAttach = userUtil.getUserById(userId);
         personToCreate.setUser(userToAttach);
         return personRepository.save(personToCreate);
@@ -49,7 +49,7 @@ public class PersonServiceImpl implements PersonService {
     public PersonEntity updatePerson(PersonDto person) {
         UserEntity secUser = userUtil.getActingPrincipal();
         PersonEntity personToUpdate = getPersonByUserId(secUser.getId());
-        personMapper.updatePersonFromDto(person, personToUpdate);
+        personMapper.updateEntity(person, personToUpdate);
         return personRepository.save(personToUpdate);
     }
 

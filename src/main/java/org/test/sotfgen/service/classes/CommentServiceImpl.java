@@ -47,7 +47,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentEntity createComment(SecUser secUser, CommentDto commentDto, Integer postId, Integer commentId) {
-        CommentEntity newComment = commentMapper.CommentDtoToCommentEntity(commentDto);
+        CommentEntity newComment = commentMapper.toEntity(commentDto);
         newComment.setAuthor(personDetailService.findByUserId(secUser.getId()).orElseThrow(() -> new PersonNotFoundException("person with id " + secUser.getId() + " not found")));
         newComment.setPost(postService.getPostById(postId));
         newComment.setPost(postService.getPostById(postId));
@@ -68,7 +68,7 @@ public class CommentServiceImpl implements CommentService {
         if(!existingComment.getAuthor().getUser().getId().equals(secUser.getId())) {
             throw new UserDoesNotHasAuthority("user is not the author of the comment with id " + commentId);
         }
-        commentMapper.updateCommentEntityFromDto(comment, existingComment);
+        commentMapper.updateEntity(comment, existingComment);
         existingComment = commentRepository.save(existingComment);
         commentRepository.flush();
         CreateHistoryEntry(existingComment);

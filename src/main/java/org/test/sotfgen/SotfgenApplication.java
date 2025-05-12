@@ -9,5 +9,4 @@ public class SotfgenApplication {
     public static void main(String[] args) {
         SpringApplication.run(SotfgenApplication.class, args);
     }
-
 }

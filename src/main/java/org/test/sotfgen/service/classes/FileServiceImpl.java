@@ -7,7 +7,7 @@ import org.test.sotfgen.entity.FileEntity;
 import org.test.sotfgen.exceptions.FileNotFoundException;
 import org.test.sotfgen.repository.FileRepository;
 import org.test.sotfgen.service.interfaces.FileService;
-import org.test.sotfgen.service.interfaces.MinioService;
+import org.test.sotfgen.minio.MinioService;
 
 @Service
 public class FileServiceImpl implements FileService {

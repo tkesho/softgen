@@ -62,7 +62,7 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public GroupEntity createGroup(GroupDto groupDto) {
         UserEntity secUser = userUtil.getActingPrincipal();
-        GroupEntity groupToCreate = groupMapper.groupDtoToGroupEntity(groupDto);
+        GroupEntity groupToCreate = groupMapper.toEntity(groupDto);
         UserEntity user = userUtil.getUserById(secUser.getId());
         groupToCreate.setOwner(user);
         groupToCreate.setActive(true);

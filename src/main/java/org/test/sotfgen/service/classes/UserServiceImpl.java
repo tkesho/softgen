@@ -49,10 +49,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserEntity createUser(UserDto user) {
-        UserEntity userToCreate = userMapper.userDtoToUser(user);
+        UserEntity userToCreate = userMapper.toEntity(user);
         userToCreate.setPassword(passwordEncoder.encode(userToCreate.getPassword()));
         UserEntity userToSave = userRepository.save(userToCreate);
-        personService.createPerson(personMapper.personDetailToPersonDetailDto(new PersonEntity()), userToSave.getId());
+        personService.createPerson(personMapper.toDto(new PersonEntity()), userToSave.getId());
         return userToSave;
     }
 

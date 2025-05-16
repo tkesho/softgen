@@ -1,4 +1,20 @@
 services:
+  softgen:
+    depends_on:
+      - mailHog
+      - postgres
+      - minio
+      - redis
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: default
+    command: >
+      java -jar /app/app.jar
+
   postgres:
     container_name: postgres
     image: postgres:latest

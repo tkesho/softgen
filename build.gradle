@@ -48,7 +48,7 @@ dependencies {
 
     developmentOnly(
             'org.springframework.boot:spring-boot-devtools',
-            'org.springframework.boot:spring-boot-docker-compose'
+//            'org.springframework.boot:spring-boot-docker-compose'
     )
 
     runtimeOnly(

@@ -58,7 +58,7 @@ public class PostServiceImpl implements PostService {
             PostEntity postToCreate = postMapper.toEntity(postDto);
             postToCreate.setUser(author);
             postToCreate.setGroup(group);
-            Set<FileEntity> files = new HashSet<>();
+            Set<AttachmentEntity> files = new HashSet<>();
 //            if(postDto.getFileIds() != null && !postDto.getFileIds().isEmpty()) {
 //                postDto.getFileIds().forEach(file -> files.add(fileService.getFileByName(file)));
 //            }
@@ -129,7 +129,7 @@ public class PostServiceImpl implements PostService {
             newPost.setHidden(postDto.getHidden());
         }
         if (postDto.getFileIds() != null && !postDto.getFileIds().isEmpty()) {
-            Set<FileEntity> files = new HashSet<>();
+            Set<AttachmentEntity> files = new HashSet<>();
             //postDto.getFileIds().forEach(postFileId -> files.add(fileService.getFileByName(postFileId)));
             newPost.setFiles(files);
         }

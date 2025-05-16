@@ -11,7 +11,7 @@ import org.test.sotfgen.audit.BaseAuditTable;
 @Setter
 @Entity
 @Table(name = "file", schema = "content")
-public class FileEntity extends BaseAuditTable {
+public class AttachmentEntity extends BaseAuditTable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

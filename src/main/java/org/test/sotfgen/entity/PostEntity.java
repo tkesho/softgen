@@ -56,7 +56,7 @@ public class PostEntity extends BaseAuditTable {
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "file_id")
     )
-    private Set<FileEntity> files = new LinkedHashSet<>();
+    private Set<AttachmentEntity> files = new LinkedHashSet<>();
 
     @JsonManagedReference
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

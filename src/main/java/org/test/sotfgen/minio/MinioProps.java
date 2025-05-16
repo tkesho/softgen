@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 @Setter
 @ConfigurationProperties(prefix = "minio")
 public class MinioProps {
-
     private String bucket;
     private String url;
     private String accessKey;
